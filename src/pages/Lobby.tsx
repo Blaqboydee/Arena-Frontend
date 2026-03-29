@@ -5,7 +5,7 @@ import GameCard, { GAMES } from "../components/GameCard";
 import { CreatedRoomModal, JoinRoomModal } from "../components/InviteModal";
 import Avatar from "../components/ui/Avatar";
 import Badge from "../components/ui/Badge";
-import Button from "../components/ui/Button";
+// import Button from "../components/ui/Button";
 
 // ── Decorative grid lines (same as landing) ───────────────────────────────────
 function GridLines() {

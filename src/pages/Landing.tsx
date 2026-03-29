@@ -34,39 +34,39 @@ function GridLines() {
 }
 
 // ── Stat ticker ───────────────────────────────────────────────────────────────
-function StatBar() {
-  const stats = [
-    { label: "Players Online", value: "—" },
-    { label: "Games Today",    value: "—" },
-    { label: "Active Rooms",   value: "—" },
-  ];
+// function StatBar() {
+//   const stats = [
+//     { label: "Players Online", value: "—" },
+//     { label: "Games Today",    value: "—" },
+//     { label: "Active Rooms",   value: "—" },
+//   ];
 
-  return (
-    <div className="w-full border-b border-border bg-surface/60 backdrop-blur-sm">
-      <div className="max-w-5xl mx-auto px-6 py-2 flex items-center justify-between">
-        {/* Left — wordmark */}
-        <span className="font-display text-sm tracking-arena text-muted uppercase">
-          Arena
-        </span>
+//   return (
+//     <div className="w-full border-b border-border bg-surface/60 backdrop-blur-sm">
+//       <div className="max-w-5xl mx-auto px-6 py-2 flex items-center justify-between">
+//         {/* Left — wordmark */}
+//         <span className="font-display text-sm tracking-arena text-muted uppercase">
+//           Arena
+//         </span>
 
-        {/* Right — stats */}
-        <div className="flex items-center gap-6">
-          {stats.map((s) => (
-            <div key={s.label} className="flex items-center gap-2">
-              <span className="text-[10px] text-dim font-mono tracking-widest uppercase">
-                {s.label}
-              </span>
-              <span className="font-display text-sm text-amber tracking-wide">
-                {s.value}
-              </span>
-            </div>
-          ))}
-          <Badge variant="green" dot>Live</Badge>
-        </div>
-      </div>
-    </div>
-  );
-}
+//         {/* Right — stats */}
+//         <div className="flex items-center gap-6">
+//           {stats.map((s) => (
+//             <div key={s.label} className="flex items-center gap-2">
+//               <span className="text-[10px] text-dim font-mono tracking-widest uppercase">
+//                 {s.label}
+//               </span>
+//               <span className="font-display text-sm text-amber tracking-wide">
+//                 {s.value}
+//               </span>
+//             </div>
+//           ))}
+//           <Badge variant="green" dot>Live</Badge>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function Landing() {
