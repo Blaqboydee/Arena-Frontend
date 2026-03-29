@@ -97,7 +97,7 @@ export default function Landing() {
 
       {/* ── Top stat bar ── */}
       <div className="relative z-10">
-        <StatBar />
+        {/* <StatBar /> */}
       </div>
 
       {/* ── Hero ── */}
@@ -147,7 +147,7 @@ export default function Landing() {
                 autoFocus
                 className="
                   w-full bg-bg border border-border rounded-sm
-                  px-4 py-3 font-mono text-sm text-text
+                  px-4 py-3 font-mono text-base text-text
                   placeholder-dim outline-none
                   focus:border-amber/60 transition-colors duration-150
                 "
