@@ -33,7 +33,7 @@ export const GAMES: GameMeta[] = [
     label:       "Tic Tac Toe",
     description: "Classic 3×3. Outsmart your opponent in seconds.",
     icon:        "✕",
-    available:   false,
+    available:   true,
   },
   {
     gameType:    "hangman",

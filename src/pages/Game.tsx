@@ -4,6 +4,7 @@ import socket from "../socket";
 import { useSession } from "../hooks/useSession";
 import type { GameType, Player } from "../types";
 import ReactionGame from "../components/games/ReactionGame";
+import TicTacToe   from "../components/games/TicTacToe";
 import Button from "../components/ui/Button";
 import Avatar from "../components/ui/Avatar";
 
@@ -146,7 +147,14 @@ export default function Game() {
             players={players}
           />
         );
-      // case "tictactoe": return <TicTacToe ... />;
+      case "tictactoe":
+        return (
+          <TicTacToe
+            roomId={roomId!}
+            myId={yourId}
+            players={players}
+          />
+        );
       // case "hangman":   return <Hangman ... />;
       default:
         return (
