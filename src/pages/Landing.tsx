@@ -182,7 +182,7 @@ export default function Landing() {
         <div className="flex items-center gap-4 slide-up-4 flex-wrap justify-center">
           {[
             { name: "Reaction",  status: "live"    },
-            { name: "Tic Tac Toe", status: "soon"  },
+            { name: "Tic Tac Toe", status: "live"  },
             { name: "Hangman",   status: "soon"    },
           ].map((g) => (
             <div
@@ -205,7 +205,7 @@ export default function Landing() {
       {/* ── Footer ── */}
       <footer className="relative z-10 border-t border-border py-4 px-6">
         <p className="text-center font-mono text-[10px] text-dim tracking-widest uppercase">
-          Arena · Built for competition
+          Arena · Made by <a href="https://github.com/Blaqboydee" className="text-amber hover:underline">Blaqboydee</a>
         </p>
       </footer>
     </div>
