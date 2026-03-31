@@ -24,8 +24,8 @@ export default function ResultScreen({ result, players, myId, scores }: Props) {
     const myScore  = scores[myId] ?? 0;
     const oppScore = opponent ? (scores[opponent.id] ?? 0) : 0;
     const text = iWon
-      ? `I just beat ${opponent?.name ?? "someone"} ${myScore}-${oppScore} on ARENA ⚡ arena.gg`
-      : `I lost to ${winnerName} ${oppScore}-${myScore} on ARENA ⚡ arena.gg`;
+      ? `I just beat ${opponent?.name ?? "someone"} ${myScore}-${oppScore} on ARENA ⚡ https://arenagameplay.vercel.app/`
+      : `I lost to ${winnerName} ${oppScore}-${myScore} on ARENA ⚡ https://arenagameplay.vercel.app/`;
 
     if (navigator.share) {
       navigator.share({ text });
