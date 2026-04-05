@@ -1,34 +1,17 @@
 import { useRef, useState, useCallback } from "react";
 import { toPng } from "html-to-image";
-import type { Player } from "../types";
-import type { TttMatchOver } from "./useTicTacToe";
 
 type ShareTarget = "native" | "twitter" | "whatsapp" | "copy" | "download";
 
 type Options = {
-  matchOver: TttMatchOver;
-  players:   Player[];
-  myId:      string;
+  shareText: string;
 };
 
-export function useShareResult({ matchOver, players, myId }: Options) {
+export function useShareResult({ shareText }: Options) {
   const cardRef                     = useRef<HTMLDivElement>(null);
   const [sharing, setSharing]       = useState<ShareTarget | null>(null);
   const [copyDone, setCopyDone]     = useState(false);
   const [downloadDone, setDownloadDone] = useState(false);
-
-  const iWon     = matchOver.winnerId === myId;
-  const isDraw   = matchOver.winnerId === null;
-  const opponent = players.find((p) => p.id !== myId);
-  const myScore  = matchOver.scores[myId] ?? 0;
-  const oppScore = opponent ? (matchOver.scores[opponent.id] ?? 0) : 0;
-
-  // ── Fallback text (used by Twitter / WhatsApp) ─────────────────────────────
-  const shareText = isDraw
-    ? `Drew ${myScore}-${oppScore} after ${matchOver.totalRounds} rounds on ARENA ⚡ arenagameplay.vercel.app`
-    : iWon
-    ? `Beat ${opponent?.name ?? "my opponent"} ${myScore}-${oppScore} in Tic Tac Toe on ARENA ⚡ arenagameplay.vercel.app`
-    : `Lost to ${matchOver.winnerName} ${oppScore}-${myScore} in Tic Tac Toe on ARENA ⚡ arenagameplay.vercel.app`;
 
   // ── Core: render card → PNG blob ───────────────────────────────────────────
   const generateImage = useCallback(async (): Promise<Blob | null> => {

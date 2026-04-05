@@ -5,6 +5,10 @@ import { useSession } from "../hooks/useSession";
 import type { GameType, Player } from "../types";
 import ReactionGame from "../components/games/ReactionGame";
 import TicTacToe   from "../components/games/TicTacToe";
+import Hangman     from "../components/games/HangMan";
+import ConnectFour from "../components/games/ConnectFour";
+import WordleDuel  from "../components/games/WordleDuel";
+import WouldYouRather from "../components/games/WouldYouRather";
 import Button from "../components/ui/Button";
 import Avatar from "../components/ui/Avatar";
 
@@ -46,9 +50,12 @@ function GameBar({ gameType, players, myId }: { gameType: GameType; players: Pla
   const opponent = players.find((p) => p.id !== myId);
 
   const gameLabels: Record<GameType, string> = {
-    reaction:  "Reaction",
-    tictactoe: "Tic Tac Toe",
-    hangman:   "Hangman",
+    reaction:       "Reaction",
+    tictactoe:      "Tic Tac Toe",
+    hangman:        "Hangman",
+    connectfour:    "Connect Four",
+    wordle:         "Wordle Duel",
+    wouldyourather: "Would You Rather",
   };
 
   return (
@@ -155,7 +162,38 @@ export default function Game() {
             players={players}
           />
         );
-      // case "hangman":   return <Hangman ... />;
+      case "hangman":
+        return (
+          <Hangman
+            roomId={roomId!}
+            myId={yourId}
+            players={players}
+          />
+        );
+      case "connectfour":
+        return (
+          <ConnectFour
+            roomId={roomId!}
+            myId={yourId}
+            players={players}
+          />
+        );
+      case "wordle":
+        return (
+          <WordleDuel
+            roomId={roomId!}
+            myId={yourId}
+            players={players}
+          />
+        );
+      case "wouldyourather":
+        return (
+          <WouldYouRather
+            roomId={roomId!}
+            myId={yourId}
+            players={players}
+          />
+        );
       default:
         return (
           <p className="font-mono text-muted">

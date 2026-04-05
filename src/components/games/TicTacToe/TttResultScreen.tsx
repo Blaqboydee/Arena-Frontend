@@ -24,6 +24,12 @@ export default function TttResultScreen({ matchOver, players, myId }: Props) {
   const myScore  = matchOver.scores[myId] ?? 0;
   const oppScore = opponent ? (matchOver.scores[opponent.id] ?? 0) : 0;
 
+  const shareText = isDraw
+    ? `Drew ${myScore}-${oppScore} after ${matchOver.totalRounds} rounds on ARENA ⚡ arenagameplay.vercel.app`
+    : iWon
+    ? `Beat ${opponent?.name ?? "my opponent"} ${myScore}-${oppScore} in Tic Tac Toe on ARENA ⚡ arenagameplay.vercel.app`
+    : `Lost to ${matchOver.winnerName} ${oppScore}-${myScore} in Tic Tac Toe on ARENA ⚡ arenagameplay.vercel.app`;
+
   const {
     cardRef,
     sharing,
@@ -34,7 +40,7 @@ export default function TttResultScreen({ matchOver, players, myId }: Props) {
     shareWhatsApp,
     copyImage,
     downloadImage,
-  } = useShareResult({ matchOver, players, myId });
+  } = useShareResult({ shareText });
 
   const ResultIcon = isDraw
     ? <Handshake size={56} strokeWidth={1.25} className="text-muted" />

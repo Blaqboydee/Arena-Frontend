@@ -49,11 +49,17 @@ export default {
           from: { opacity: "0", transform: "translateY(24px)" },
           to:   { opacity: "1", transform: "translateY(0)" },
         },
+        shake: {
+          "0%,100%": { transform: "translateX(0)" },
+          "10%,30%,50%,70%,90%": { transform: "translateX(-4px)" },
+          "20%,40%,60%,80%":     { transform: "translateX(4px)" },
+        },
       },
       animation: {
         flicker:       "flicker 4s infinite",
         "amber-pulse": "amber-pulse 1.2s ease infinite alternate",
         "slide-up":    "slide-up 0.5s ease forwards",
+        shake:         "shake 0.5s ease",
       },
     },
   },
