@@ -5,6 +5,8 @@ import GameCard, { GAMES } from "../components/GameCard";
 import { CreatedRoomModal, JoinRoomModal } from "../components/InviteModal";
 import Avatar from "../components/ui/Avatar";
 import Badge from "../components/ui/Badge";
+import TriviaSetup from "../components/TriviaSetup";
+import type { AvatarColor } from "../types";
 // import Button from "../components/ui/Button";
 
 // ── Decorative grid lines (same as landing) ───────────────────────────────────
@@ -32,7 +34,7 @@ function TopBar({
   onLeave,
 }: {
   name: string;
-  avatarColor: any;
+  avatarColor: AvatarColor;
   onJoinRoom: () => void;
   onLeave: () => void;
 }) {
@@ -131,12 +133,16 @@ export default function Lobby() {
     inviteInput,
     setInviteInput,
     joinError,
+    roomUpdate,
+    triviaConfig,
+    setTriviaConfig,
     findMatch,
     cancelMatch,
     createRoom,
     joinRoom,
     openJoinDialog,
     cancelPrivateRoom,
+    startGame,
   } = useLobby();
 
   // Redirect to landing if no session
@@ -173,20 +179,56 @@ export default function Lobby() {
           </h1>
         </div>
 
-        {/* Game grid */}
-        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-4 slide-up-2">
-          {GAMES.map((game) => (
-            <GameCard
-              key={game.gameType}
-              game={game}
-              queueCount={queueCounts[game.gameType] ?? 0}
-              isQueuing={phase === "queuing" && queuedGame === game.gameType}
-              anyQueuing={anyQueuing}
-              onQuickMatch={() => findMatch(game.gameType)}
-              onPrivateRoom={() => createRoom(game.gameType)}
-              onCancel={cancelMatch}
-            />
-          ))}
+        {/* Game grid — grouped by player count */}
+        <div className="w-full max-w-4xl flex flex-col gap-8 slide-up-2">
+
+          {/* 1v1 Games */}
+          {(() => {
+            const duoGames = GAMES.filter(g => g.playerCount.max === 2 && g.playerCount.min === 2);
+            return duoGames.length > 0 ? (
+              <section>
+                <div className="rule-label w-32 mb-4"><span>1v1 Games</span></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {duoGames.map((game) => (
+                    <GameCard
+                      key={game.gameType}
+                      game={game}
+                      queueCount={queueCounts[game.gameType] ?? 0}
+                      isQueuing={phase === "queuing" && queuedGame === game.gameType}
+                      anyQueuing={anyQueuing}
+                      onQuickMatch={() => findMatch(game.gameType)}
+                      onPrivateRoom={() => createRoom(game.gameType)}
+                      onCancel={cancelMatch}
+                    />
+                  ))}
+                </div>
+              </section>
+            ) : null;
+          })()}
+
+          {/* Party Games (3+) */}
+          {(() => {
+            const partyGames = GAMES.filter(g => g.playerCount.max > 2);
+            return partyGames.length > 0 ? (
+              <section>
+                <div className="rule-label w-40 mb-4"><span>Party & Co-op</span></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {partyGames.map((game) => (
+                    <GameCard
+                      key={game.gameType}
+                      game={game}
+                      queueCount={queueCounts[game.gameType] ?? 0}
+                      isQueuing={phase === "queuing" && queuedGame === game.gameType}
+                      anyQueuing={anyQueuing}
+                      onQuickMatch={() => findMatch(game.gameType)}
+                      onPrivateRoom={() => createRoom(game.gameType)}
+                      onCancel={cancelMatch}
+                    />
+                  ))}
+                </div>
+              </section>
+            ) : null;
+          })()}
         </div>
 
         {/* Footer hint */}
@@ -201,6 +243,13 @@ export default function Lobby() {
           inviteCode={inviteCode}
           gameLabel={GAMES.find((g) => g.gameType === queuedGame)?.label ?? ""}
           onCancel={cancelPrivateRoom}
+          roomUpdate={roomUpdate}
+          onStartGame={startGame}
+          setupPanel={
+            queuedGame === "triviaroyale"
+              ? <TriviaSetup config={triviaConfig} onChange={setTriviaConfig} />
+              : undefined
+          }
         />
       )}
 

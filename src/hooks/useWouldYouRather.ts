@@ -147,7 +147,8 @@ export function useWouldYouRather({ roomId, myId, players }: Props) {
       socket.off("wyr_match_over");
       stopCountdown();
     };
-  }, [myId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── Actions ────────────────────────────────────────────────────────────────
 

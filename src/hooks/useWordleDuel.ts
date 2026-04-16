@@ -180,7 +180,7 @@ export function useWordleDuel({ roomId, myId, players }: Props) {
       socket.off("wdl_round_result");
       socket.off("wdl_match_over");
     };
-  }, [myId]);
+  }, []);
 
   // ── Keyboard input ─────────────────────────────────────────────────────────
 

@@ -1,15 +1,21 @@
 import { useState } from "react";
+import type React from "react";
 import Button from "./ui/Button";
 import Card from "./ui/Card";
+import Avatar from "./ui/Avatar";
+import type { RoomPlayerUpdate } from "../hooks/useLobby";
 
 // ── Created Room Modal ─────────────────────────────────────────────────────────
 type CreatedProps = {
   inviteCode: string;
   gameLabel: string;
   onCancel: () => void;
+  roomUpdate?: RoomPlayerUpdate | null;
+  onStartGame?: () => void;
+  setupPanel?: React.ReactNode;
 };
 
-export function CreatedRoomModal({ inviteCode, gameLabel, onCancel }: CreatedProps) {
+export function CreatedRoomModal({ inviteCode, gameLabel, onCancel, roomUpdate, onStartGame, setupPanel }: CreatedProps) {
   const [copied, setCopied] = useState<"idle" | "code" | "link">("idle");
 
   const inviteLink = `${window.location.origin}/join/${inviteCode}`;
@@ -76,13 +82,55 @@ export function CreatedRoomModal({ inviteCode, gameLabel, onCancel }: CreatedPro
           </div>
         </div>
 
-        {/* Waiting indicator */}
-        <div className="flex items-center gap-3 py-1">
-          <div className="w-4 h-4 rounded-full border-2 border-border border-t-amber animate-spin shrink-0" />
-          <span className="font-mono text-xs text-muted">
-            Waiting for opponent to join…
-          </span>
-        </div>
+        {/* Game setup panel (host-only, e.g. Trivia question config) */}
+        {setupPanel && (
+          <>
+            {setupPanel}
+            <div className="w-full h-px bg-border" />
+          </>
+        )}
+
+        {/* Waiting indicator / Player list */}
+        {roomUpdate && roomUpdate.maxPlayers > 2 ? (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+                Players ({roomUpdate.players.length}/{roomUpdate.maxPlayers})
+              </span>
+              <span className="font-mono text-[10px] text-dim">
+                min {roomUpdate.minPlayers} to start
+              </span>
+            </div>
+            <div className="flex flex-col gap-2">
+              {roomUpdate.players.map((p) => (
+                <div key={p.id} className="flex items-center gap-2 px-3 py-2 rounded-sm border border-border bg-bg">
+                  <Avatar name={p.name} color={p.avatarColor} size="sm" />
+                  <span className="font-mono text-xs text-muted">{p.name}</span>
+                </div>
+              ))}
+            </div>
+            {roomUpdate.canStart && onStartGame && (
+              <Button variant="primary" size="sm" fullWidth onClick={onStartGame}>
+                Start Game ({roomUpdate.players.length} players)
+              </Button>
+            )}
+            {!roomUpdate.canStart && (
+              <div className="flex items-center gap-3 py-1">
+                <div className="w-4 h-4 rounded-full border-2 border-border border-t-amber animate-spin shrink-0" />
+                <span className="font-mono text-xs text-muted">
+                  Need {roomUpdate.minPlayers - roomUpdate.players.length} more player{roomUpdate.minPlayers - roomUpdate.players.length !== 1 ? "s" : ""}…
+                </span>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 py-1">
+            <div className="w-4 h-4 rounded-full border-2 border-border border-t-amber animate-spin shrink-0" />
+            <span className="font-mono text-xs text-muted">
+              Waiting for opponent to join…
+            </span>
+          </div>
+        )}
 
         <Button variant="ghost" size="sm" fullWidth onClick={onCancel}>
           Cancel room

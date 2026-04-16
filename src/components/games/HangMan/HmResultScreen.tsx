@@ -2,6 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { Trophy, Skull, Handshake } from "lucide-react";
 import type { Player } from "../../../types";
 import type { HmMatchOver } from "../../../hooks/useHangman";
+import { useShareResult } from "../../../hooks/useShareResult";
+import GameShareCard from "../../ui/GameShareCard";
+import SharePanel from "../../ui/SharePanel";
 import Avatar from "../../ui/Avatar";
 import Button from "../../ui/Button";
 
@@ -21,6 +24,23 @@ export default function HmResultScreen({ matchOver, players, myId }: Props) {
   const myScore  = matchOver.scores[myId] ?? 0;
   const oppScore = opponent ? (matchOver.scores[opponent.id] ?? 0) : 0;
 
+  const shareText = isDraw
+    ? `Drew ${myScore}-${oppScore} after ${matchOver.totalRounds} rounds in Hangman on ARENA ⚡ arenagameplay.vercel.app`
+    : iWon
+    ? `Beat ${opponent?.name ?? "my opponent"} ${myScore}-${oppScore} in Hangman on ARENA ⚡ arenagameplay.vercel.app`
+    : `Lost to ${matchOver.winnerName} ${oppScore}-${myScore} in Hangman on ARENA ⚡ arenagameplay.vercel.app`;
+
+  const {
+    cardRef, sharing, copyDone, downloadDone,
+    shareNative, shareTwitter, shareWhatsApp, copyImage, downloadImage,
+  } = useShareResult({ shareText });
+
+  const tagline = isDraw
+    ? "Perfectly matched."
+    : iWon
+    ? "Word wizard wins."
+    : `${matchOver.winnerName} guessed better.`;
+
   const ResultIcon = isDraw
     ? <Handshake size={56} strokeWidth={1.25} className="text-muted" />
     : iWon
@@ -28,7 +48,20 @@ export default function HmResultScreen({ matchOver, players, myId }: Props) {
     : <Skull     size={56} strokeWidth={1.25} className="text-muted"  />;
 
   return (
-    <div className="flex flex-col items-center gap-8 w-full max-w-md slide-up-1">
+    <>
+      <GameShareCard
+        gameLabel="HANGMAN"
+        winnerId={matchOver.winnerId}
+        myId={myId}
+        players={players}
+        myScore={myScore}
+        oppScore={oppScore}
+        totalRounds={matchOver.totalRounds}
+        tagline={tagline}
+        cardRef={cardRef}
+      />
+
+      <div className="flex flex-col items-center gap-8 w-full max-w-md slide-up-1">
 
       {/* Headline */}
       <div className="flex flex-col items-center gap-2">
@@ -86,6 +119,13 @@ export default function HmResultScreen({ matchOver, players, myId }: Props) {
         </p>
       </div>
 
+      {/* Share panel */}
+      <SharePanel
+        sharing={sharing} copyDone={copyDone} downloadDone={downloadDone}
+        shareNative={shareNative} shareTwitter={shareTwitter}
+        shareWhatsApp={shareWhatsApp} copyImage={copyImage} downloadImage={downloadImage}
+      />
+
       {/* Navigation */}
       <div className="flex gap-3 w-full">
         <Button variant="secondary" size="md" fullWidth onClick={() => navigate("/lobby")}>
@@ -96,5 +136,6 @@ export default function HmResultScreen({ matchOver, players, myId }: Props) {
         </Button>
       </div>
     </div>
+    </>
   );
 }

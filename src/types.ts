@@ -11,7 +11,7 @@ export type Player = {
 
 // ── Room / Lobby ──────────────────────────────────────────────────────────────
 
-export type GameType = "reaction" | "tictactoe" | "hangman" | "connectfour" | "wordle" | "wouldyourather";
+export type GameType = "reaction" | "tictactoe" | "hangman" | "connectfour" | "wordle" | "wouldyourather" | "memoryduel" | "triviaroyale" | "bombdefusal";
 
 export type RoomStatus = "waiting" | "in_progress" | "finished";
 

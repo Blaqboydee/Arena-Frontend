@@ -3,24 +3,31 @@ import { useNavigate } from "react-router-dom";
 import socket from "../socket";
 import type { Player } from "../types";
 
-export type C4Phase = "pending" | "playing" | "round_over" | "match_over";
+export type MemPhase = "pending" | "playing" | "round_over" | "match_over";
 
-export type C4RoundResult = {
-  winnerId:    string | null;
-  winnerName:  string | null;
-  reason:      "connect4" | "draw" | "timeout" | "forfeit" | null;
-  board:       (string | null)[][];
-  winCells:    number[][] | null;
-  scores:      Record<string, number>;
-  roundNumber: number;
+export type MemCard = {
+  id:      number;
+  emoji:   string | null;
+  flipped: boolean;
+  matched: boolean;
 };
 
-export type C4MatchOver = {
+export type MemRoundResult = {
+  winnerId:    string | null;
+  winnerName:  string | null;
+  pairs:       Record<string, number>;
+  scores:      Record<string, number>;
+  roundNumber: number;
+  board:       MemCard[];
+};
+
+export type MemMatchOver = {
   winnerId:    string | null;
   winnerName:  string | null;
   scores:      Record<string, number>;
   totalRounds: number;
-  reason?:     string;
+  forfeit?:    boolean;
+  forfeitedBy?: string;
 };
 
 type Props = {
@@ -29,31 +36,23 @@ type Props = {
   players: Player[];
 };
 
-const ROWS     = 6;
-const COLS     = 7;
-const TIMER_MS = 20_000;
+const TIMER_MS = 10_000;
 
-function emptyBoard(): (string | null)[][] {
-  return Array.from({ length: ROWS }, () => Array(COLS).fill(null));
-}
-
-export function useConnectFour({ roomId, myId, players }: Props) {
+export function useMemoryDuel({ roomId, myId, players }: Props) {
   const navigate = useNavigate();
 
-  const [board, setBoard]             = useState<(string | null)[][]>(emptyBoard());
+  const [board, setBoard]             = useState<MemCard[]>([]);
   const [turnId, setTurnId]           = useState<string>("");
-  const [myColor, setMyColor]         = useState<string>("red");
+  const [pairs, setPairs]             = useState<Record<string, number>>({});
   const [scores, setScores]           = useState<Record<string, number>>(
     Object.fromEntries(players.map((p) => [p.id, 0]))
   );
   const [roundNumber, setRoundNumber] = useState<number>(0);
-  const [phase, setPhase]             = useState<C4Phase>("pending");
-  const [roundResult, setRoundResult] = useState<C4RoundResult | null>(null);
-  const [matchOver, setMatchOver]     = useState<C4MatchOver | null>(null);
+  const [phase, setPhase]             = useState<MemPhase>("pending");
+  const [roundResult, setRoundResult] = useState<MemRoundResult | null>(null);
+  const [matchOver, setMatchOver]     = useState<MemMatchOver | null>(null);
   const [timeLeft, setTimeLeft]       = useState<number>(TIMER_MS);
   const [showConfirmEnd, setShowConfirmEnd] = useState(false);
-  const [hoverCol, setHoverCol]       = useState<number | null>(null);
-  const [lastMove, setLastMove]       = useState<{ row: number; col: number; color: string } | null>(null);
 
   const timerStartRef = useRef<number>(0);
   const intervalRef   = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -65,7 +64,6 @@ export function useConnectFour({ roomId, myId, players }: Props) {
     if (intervalRef.current) clearInterval(intervalRef.current);
     timerStartRef.current = Date.now();
     setTimeLeft(TIMER_MS);
-
     intervalRef.current = setInterval(() => {
       const elapsed   = Date.now() - timerStartRef.current;
       const remaining = Math.max(0, TIMER_MS - elapsed);
@@ -121,106 +119,87 @@ export function useConnectFour({ roomId, myId, players }: Props) {
   // ── Socket events ──────────────────────────────────────────────────────────
 
   useEffect(() => {
-    socket.on("c4_round_start", (data: {
-      roundNumber: number;
-      turnId:      string;
-      board:       (string | null)[][];
-      scores:      Record<string, number>;
-      colors:      Record<string, string>;
-      players:     Player[];
-    }) => {
-      setBoard(data.board);
-      setTurnId(data.turnId);
-      setMyColor(data.colors[myId] ?? "red");
-      setScores(data.scores);
-      setRoundNumber(data.roundNumber);
+    socket.on("mem_round_start", () => {
       setPhase("playing");
       setRoundResult(null);
-      setLastMove(null);
-      setHoverCol(null);
+      setPairs({});
     });
 
-    socket.on("c4_update", (data: {
-      board:       (string | null)[][];
+    socket.on("mem_update", (data: {
+      board:       MemCard[];
       turnId:      string;
+      pairs:       Record<string, number>;
       scores:      Record<string, number>;
-      colors:      Record<string, string>;
       roundNumber: number;
-      lastMove:    { row: number; col: number; color: string } | null;
-      players:     Player[];
+      revealCards:  { id: number; emoji: string }[] | null;
+      reason:      string | null;
+      timeLimit:   number;
     }) => {
       setBoard(data.board);
       setTurnId(data.turnId);
-      setMyColor(data.colors[myId] ?? "red");
+      setPairs(data.pairs);
       setScores(data.scores);
       setRoundNumber(data.roundNumber);
-      setLastMove(data.lastMove);
       setPhase("playing");
-      setHoverCol(null);
-    });
-
-    socket.on("c4_timer", () => {
       startCountdown();
     });
 
-    socket.on("c4_round_result", (data: C4RoundResult) => {
+    socket.on("mem_round_result", (data: MemRoundResult) => {
       stopCountdown();
       setBoard(data.board);
       setScores(data.scores);
+      setPairs(data.pairs);
       setRoundNumber(data.roundNumber);
       setRoundResult(data);
       setPhase("round_over");
-      setHoverCol(null);
     });
 
-    socket.on("c4_match_over", (data: C4MatchOver) => {
+    socket.on("mem_match_over", (data: MemMatchOver) => {
       stopCountdown();
       setMatchOver(data);
       setPhase("match_over");
     });
 
     return () => {
-      socket.off("c4_round_start");
-      socket.off("c4_update");
-      socket.off("c4_timer");
-      socket.off("c4_round_result");
-      socket.off("c4_match_over");
+      socket.off("mem_round_start");
+      socket.off("mem_update");
+      socket.off("mem_round_result");
+      socket.off("mem_match_over");
       stopCountdown();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
-  const dropDisc = useCallback((col: number) => {
+  const flipCard = useCallback((cardId: number) => {
     if (phase !== "playing") return;
-    if (turnId !== myId)     return;
-    socket.emit("c4_move", { roomId, col });
+    if (turnId !== myId) return;
+    socket.emit("mem_flip", { roomId, cardId });
   }, [phase, turnId, myId, roomId]);
 
   const requestEndMatch = useCallback(() => setShowConfirmEnd(true),  []);
   const confirmEndMatch = useCallback(() => {
     setShowConfirmEnd(false);
-    socket.emit("c4_end_match", { roomId });
+    socket.emit("mem_end_match", { roomId });
   }, [roomId]);
   const cancelEndMatch  = useCallback(() => setShowConfirmEnd(false), []);
 
   // ── Derived ────────────────────────────────────────────────────────────────
 
-  const isMyTurn = turnId === myId;
   const me       = players.find((p) => p.id === myId);
   const opponent = players.find((p) => p.id !== myId);
+  const isMyTurn = turnId === myId;
   const myScore  = scores[myId] ?? 0;
   const oppScore = opponent ? (scores[opponent.id] ?? 0) : 0;
+  const myPairs  = pairs[myId] ?? 0;
+  const oppPairs = opponent ? (pairs[opponent.id] ?? 0) : 0;
   const timerPct = (timeLeft / TIMER_MS) * 100;
-  const oppColor = myColor === "red" ? "yellow" : "red";
 
   return {
-    board, turnId, myColor, oppColor, scores, roundNumber,
-    phase, roundResult, matchOver,
-    timeLeft, timerPct, isMyTurn,
-    me, opponent, myScore, oppScore,
-    showConfirmEnd, hoverCol, setHoverCol, lastMove,
-    dropDisc, requestEndMatch, confirmEndMatch, cancelEndMatch,
+    board, roundNumber, phase, roundResult, matchOver,
+    timeLeft, timerPct, isMyTurn, turnId,
+    me, opponent, myScore, oppScore, myPairs, oppPairs,
+    showConfirmEnd,
+    flipCard, requestEndMatch, confirmEndMatch, cancelEndMatch,
   };
 }

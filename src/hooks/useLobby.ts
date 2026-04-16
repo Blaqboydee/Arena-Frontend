@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import socket from "../socket";
 import { useSession } from "./useSession";
-import type { GameType } from "../types";
+import type { GameType, Player } from "../types";
+import type { TriviaConfig } from "../components/TriviaSetup";
 
 export type LobbyPhase =
   | "idle"           // connected, browsing games
@@ -12,6 +13,16 @@ export type LobbyPhase =
   | "match_found";   // about to navigate to game
 
 export type QueueCounts = Partial<Record<GameType, number>>;
+
+export type RoomPlayerUpdate = {
+  roomId:     string;
+  inviteCode: string;
+  gameType:   GameType;
+  players:    Player[];
+  minPlayers: number;
+  maxPlayers: number;
+  canStart:   boolean;
+};
 
 export function useLobby() {
   const navigate    = useNavigate();
@@ -24,6 +35,8 @@ export function useLobby() {
   const [inviteInput, setInviteInput] = useState<string>("");
   const [joinError, setJoinError]     = useState<string>("");
   const [roomId, setRoomId]           = useState<string | null>(null);
+  const [roomUpdate, setRoomUpdate]   = useState<RoomPlayerUpdate | null>(null);
+  const [triviaConfig, setTriviaConfig] = useState<TriviaConfig>({ mode: "random" });
 
   // ── Socket lifecycle ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -56,6 +69,14 @@ export function useLobby() {
       setJoinError(data.message);
     });
 
+    socket.on("room_player_update", (data: RoomPlayerUpdate) => {
+      setRoomUpdate(data);
+      setRoomId(data.roomId);
+      setInviteCode(data.inviteCode);
+      setQueuedGame(data.gameType);
+      setPhase("creating_room");
+    });
+
     socket.on(
       "match_found",
       (data: { roomId: string; gameType: GameType; players: unknown[]; yourId: string }) => {
@@ -78,6 +99,7 @@ export function useLobby() {
       socket.off("room_created");
       socket.off("join_error");
       socket.off("match_found");
+      socket.off("room_player_update");
     };
   }, [session, navigate]);
 
@@ -118,8 +140,15 @@ export function useLobby() {
     setInviteCode("");
     setRoomId(null);
     setQueuedGame(null);
+    setRoomUpdate(null);
     setPhase("idle");
   }, []);
+
+  const startGame = useCallback(() => {
+    if (!roomId) return;
+    const questionConfig = queuedGame === "triviaroyale" ? triviaConfig : undefined;
+    socket.emit("start_game", { roomId, questionConfig });
+  }, [roomId, queuedGame, triviaConfig]);
 
   return {
     phase,
@@ -131,11 +160,15 @@ export function useLobby() {
     setInviteInput,
     joinError,
     roomId,
+    roomUpdate,
+    triviaConfig,
+    setTriviaConfig,
     findMatch,
     cancelMatch,
     createRoom,
     joinRoom,
     openJoinDialog,
     cancelPrivateRoom,
+    startGame,
   };
 }

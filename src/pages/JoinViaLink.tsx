@@ -70,9 +70,15 @@ export default function JoinViaLink() {
       }
     );
 
+    // Multi-player rooms: redirect to lobby to wait in the room
+    socket.on("room_player_update", () => {
+      navigate("/lobby", { replace: true });
+    });
+
     return () => {
       socket.off("join_error");
       socket.off("match_found");
+      socket.off("room_player_update");
     };
   }, [phase, code, session, navigate, nameInput, color]);
 

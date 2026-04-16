@@ -11,6 +11,7 @@ type GameMeta = {
   icon: string;
   available: boolean;
   howToPlay: string[];
+  playerCount: { min: number; max: number };
 };
 
 type Props = {
@@ -30,6 +31,7 @@ export const GAMES: GameMeta[] = [
     description: "First to click when the light goes green. Pure reflex.",
     icon:        "⚡",
     available:   true,
+    playerCount: { min: 2, max: 2 },
     howToPlay: [
       "A coloured circle appears on screen.",
       "Wait for it to turn GREEN — then tap as fast as you can!",
@@ -43,6 +45,7 @@ export const GAMES: GameMeta[] = [
     description: "Classic 3×3. Outsmart your opponent in seconds.",
     icon:        "✕",
     available:   true,
+    playerCount: { min: 2, max: 2 },
     howToPlay: [
       "You and your opponent take turns placing X or O on a 3×3 grid.",
       "Get three in a row — horizontally, vertically, or diagonally — to win.",
@@ -56,6 +59,7 @@ export const GAMES: GameMeta[] = [
     description: "Set a word, guess a word. Don't get hanged.",
     icon:        "◉",
     available:   true,
+    playerCount: { min: 2, max: 2 },
     howToPlay: [
       "One player is the Setter — they choose a secret word.",
       "The other player is the Guesser — they pick letters to reveal the word.",
@@ -71,6 +75,7 @@ export const GAMES: GameMeta[] = [
     description: "Drop discs, connect four in a row. Classic strategy.",
     icon:        "🔴",
     available:   true,
+    playerCount: { min: 2, max: 2 },
     howToPlay: [
       "Take turns dropping colored discs into a 7-column grid.",
       "Discs fall to the lowest available row in that column.",
@@ -85,6 +90,7 @@ export const GAMES: GameMeta[] = [
     description: "Race to crack the word. Both guess the same 5-letter word.",
     icon:        "🟩",
     available:   true,
+    playerCount: { min: 2, max: 2 },
     howToPlay: [
       "Both players guess the same secret 5-letter word simultaneously.",
       "Type a valid 5-letter word and press Enter to submit.",
@@ -99,12 +105,57 @@ export const GAMES: GameMeta[] = [
     description: "Pick a side. See if you think alike.",
     icon:        "🤔",
     available:   true,
+    playerCount: { min: 2, max: 2 },
     howToPlay: [
       "A 'Would You Rather' question appears with two options.",
       "Both players choose Option A or Option B simultaneously.",
       "Choices are revealed — see if you agree or disagree!",
       "Track your compatibility percentage as you play.",
       "No winner or loser — just vibes.",
+    ],
+  },
+  {
+    gameType:    "memoryduel",
+    label:       "Memory Duel",
+    description: "Flip cards, match pairs. Outlast your opponent's memory.",
+    icon:        "🃏",
+    available:   true,
+    playerCount: { min: 2, max: 2 },
+    howToPlay: [
+      "A 4×4 grid of face-down cards hides matching emoji pairs.",
+      "Take turns flipping two cards — if they match, you keep the pair.",
+      "If they don't match, cards flip back and it's your opponent's turn.",
+      "The player with the most pairs at the end wins the round!",
+    ],
+  },
+  {
+    gameType:    "triviaroyale",
+    label:       "Trivia Royale",
+    description: "Answer fast, score big. Party trivia for 3–8 players.",
+    icon:        "🧠",
+    available:   true,
+    playerCount: { min: 3, max: 8 },
+    howToPlay: [
+      "Everyone answers the same multiple-choice question simultaneously.",
+      "Faster correct answers earn more points.",
+      "After each question, the leaderboard updates in real-time.",
+      "10 questions per match. Highest score wins!",
+      "Minimum 3 players required. Invite friends with a room code.",
+    ],
+  },
+  {
+    gameType:    "bombdefusal",
+    label:       "Bomb Defusal",
+    description: "Co-op chaos. One sees the bomb, the others read the manual.",
+    icon:        "💣",
+    available:   true,
+    playerCount: { min: 2, max: 4 },
+    howToPlay: [
+      "One player is the Defuser — they see the bomb's modules.",
+      "Other players are Experts — they have the instruction manual.",
+      "The Defuser describes what they see; Experts tell them what to do.",
+      "Solve all 3 modules before time runs out. Two strikes and it blows!",
+      "Communication is key — Experts can't see the bomb!",
     ],
   },
 ];
@@ -226,19 +277,26 @@ export default function GameCard({
         </div>
       </div>
 
-      {/* Queue count */}
-      <div className="flex items-center gap-2">
-        <span
-          className={`w-1.5 h-1.5 rounded-full ${
-            queueCount > 0 ? "bg-green" : "bg-dim"
-          }`}
-        />
-        <span className="font-mono text-[11px] text-muted">
-          {queueCount === 0
-            ? "No one in queue"
-            : queueCount === 1
-            ? "1 player waiting"
-            : `${queueCount} players waiting`}
+      {/* Queue count + player count */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${
+              queueCount > 0 ? "bg-green" : "bg-dim"
+            }`}
+          />
+          <span className="font-mono text-[11px] text-muted">
+            {queueCount === 0
+              ? "No one in queue"
+              : queueCount === 1
+              ? "1 player waiting"
+              : `${queueCount} players waiting`}
+          </span>
+        </div>
+        <span className="font-mono text-[10px] text-dim">
+          {game.playerCount.min === game.playerCount.max
+            ? `${game.playerCount.min}p`
+            : `${game.playerCount.min}–${game.playerCount.max}p`}
         </span>
       </div>
 
@@ -264,6 +322,21 @@ export default function GameCard({
                 onClick={onCancel}
               >
                 Cancel
+              </Button>
+            </>
+          ) : game.playerCount.max > 2 ? (
+            <>
+              <p className="font-mono text-[10px] text-dim text-center tracking-wide">
+                Invite friends to play together
+              </p>
+              <Button
+                variant="primary"
+                size="sm"
+                fullWidth
+                disabled={disabled}
+                onClick={onPrivateRoom}
+              >
+                Create Room
               </Button>
             </>
           ) : (

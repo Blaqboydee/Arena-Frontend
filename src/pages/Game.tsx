@@ -9,6 +9,9 @@ import Hangman     from "../components/games/HangMan";
 import ConnectFour from "../components/games/ConnectFour";
 import WordleDuel  from "../components/games/WordleDuel";
 import WouldYouRather from "../components/games/WouldYouRather";
+import MemoryDuel from "../components/games/MemoryDuel";
+import TriviaRoyale from "../components/games/TriviaRoyale";
+import BombDefusal from "../components/games/BombDefusal";
 import Button from "../components/ui/Button";
 import Avatar from "../components/ui/Avatar";
 
@@ -47,7 +50,7 @@ function OpponentLeftBanner({ name, onLeave }: { name: string; onLeave: () => vo
 
 function GameBar({ gameType, players, myId }: { gameType: GameType; players: Player[]; myId: string }) {
   const me       = players.find((p) => p.id === myId);
-  const opponent = players.find((p) => p.id !== myId);
+  const others   = players.filter((p) => p.id !== myId);
 
   const gameLabels: Record<GameType, string> = {
     reaction:       "Reaction",
@@ -56,6 +59,9 @@ function GameBar({ gameType, players, myId }: { gameType: GameType; players: Pla
     connectfour:    "Connect Four",
     wordle:         "Wordle Duel",
     wouldyourather: "Would You Rather",
+    memoryduel:     "Memory Duel",
+    triviaroyale:   "Trivia Royale",
+    bombdefusal:    "Bomb Defusal",
   };
 
   return (
@@ -74,14 +80,19 @@ function GameBar({ gameType, players, myId }: { gameType: GameType; players: Pla
               <span className="font-mono text-xs text-muted">{me.name}</span>
             </div>
           )}
-          {opponent && (
+          {others.length === 1 && (
             <>
               <span className="font-mono text-xs text-dim">vs</span>
               <div className="flex items-center gap-1.5">
-                <Avatar name={opponent.name} color={opponent.avatarColor} size="sm" />
-                <span className="font-mono text-xs text-muted">{opponent.name}</span>
+                <Avatar name={others[0].name} color={others[0].avatarColor} size="sm" />
+                <span className="font-mono text-xs text-muted">{others[0].name}</span>
               </div>
             </>
+          )}
+          {others.length > 1 && (
+            <span className="font-mono text-xs text-dim">
+              +{others.length} players
+            </span>
           )}
         </div>
       </div>
@@ -189,6 +200,30 @@ export default function Game() {
       case "wouldyourather":
         return (
           <WouldYouRather
+            roomId={roomId!}
+            myId={yourId}
+            players={players}
+          />
+        );
+      case "memoryduel":
+        return (
+          <MemoryDuel
+            roomId={roomId!}
+            myId={yourId}
+            players={players}
+          />
+        );
+      case "triviaroyale":
+        return (
+          <TriviaRoyale
+            roomId={roomId!}
+            myId={yourId}
+            players={players}
+          />
+        );
+      case "bombdefusal":
+        return (
+          <BombDefusal
             roomId={roomId!}
             myId={yourId}
             players={players}
