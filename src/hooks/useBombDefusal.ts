@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import socket from "../socket";
+import socket, { BACKEND_URL } from "../socket";
 import type { Player } from "../types";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -129,7 +129,7 @@ export function useBombDefusal({ roomId, myId, players }: Props) {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (phase !== "active") return;
       navigator.sendBeacon(
-        `/api/rooms/${roomId}/forfeit`,
+        `${BACKEND_URL}/api/rooms/${roomId}/forfeit`,
         JSON.stringify({ playerId: myId, reason: "disconnect" }),
       );
       e.preventDefault();

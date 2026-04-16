@@ -1,12 +1,16 @@
 import { io, Socket } from "socket.io-client";
 
-const socket: Socket = io(import.meta.env.VITE_BACKEND_URL, {
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+
+const socket: Socket = io(BACKEND_URL, {
   autoConnect: false,
-  transports: ["websocket", "polling"],
+  withCredentials: true,
+  transports: ["polling", "websocket"],
   reconnection: true,
-  reconnectionAttempts: 5,
+  reconnectionAttempts: 10,
   reconnectionDelay: 1000,
-  timeout: 20000,
+  timeout: 30000,
 });
 
+export { BACKEND_URL };
 export default socket;

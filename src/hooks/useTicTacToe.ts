@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom"; // swap for useRouter() if using Next.js
-import socket from "../socket";
+import socket, { BACKEND_URL } from "../socket";
 import type { Player } from "../types";
 
 export type TttPhase = "pending" | "playing" | "round_over" | "match_over";
@@ -127,7 +127,7 @@ export function useTicTacToe({ roomId, myId, players }: Props) {
       if (phase !== "playing" && phase !== "round_over") return;
 
       navigator.sendBeacon(
-        `/api/rooms/${roomId}/forfeit`,
+        `${BACKEND_URL}/api/rooms/${roomId}/forfeit`,
         JSON.stringify({ playerId: myId, reason: "disconnect" }),
       );
 

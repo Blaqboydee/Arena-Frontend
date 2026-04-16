@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import socket from "../socket";
+import socket, { BACKEND_URL } from "../socket";
 import type { Player } from "../types";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -145,7 +145,7 @@ export function useHangman({ roomId, myId, players }: Props) {
       if (phase === "pending" || phase === "match_over") return;
 
       navigator.sendBeacon(
-        `/api/rooms/${roomId}/forfeit`,
+        `${BACKEND_URL}/api/rooms/${roomId}/forfeit`,
         JSON.stringify({ playerId: myId, reason: "disconnect" }),
       );
 
