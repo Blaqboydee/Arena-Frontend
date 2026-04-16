@@ -227,6 +227,9 @@ export default function GameCard({
   const [showHowTo, setShowHowTo] = useState(false);
   const disabled = !game.available || (anyQueuing && !isQueuing);
 
+  // If we're queuing for this game, exclude ourselves from the count
+  const displayCount = isQueuing ? Math.max(0, queueCount - 1) : queueCount;
+
   return (
     <div
       className={`
@@ -282,15 +285,15 @@ export default function GameCard({
         <div className="flex items-center gap-2">
           <span
             className={`w-1.5 h-1.5 rounded-full ${
-              queueCount > 0 ? "bg-green" : "bg-dim"
+              displayCount > 0 ? "bg-green" : "bg-dim"
             }`}
           />
           <span className="font-mono text-[11px] text-muted">
-            {queueCount === 0
+            {displayCount === 0
               ? "No one in queue"
-              : queueCount === 1
+              : displayCount === 1
               ? "1 player waiting"
-              : `${queueCount} players waiting`}
+              : `${displayCount} players waiting`}
           </span>
         </div>
         <span className="font-mono text-[10px] text-dim">
