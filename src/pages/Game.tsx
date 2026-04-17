@@ -14,6 +14,8 @@ import TriviaRoyale from "../components/games/TriviaRoyale";
 import BombDefusal from "../components/games/BombDefusal";
 import Button from "../components/ui/Button";
 import Avatar from "../components/ui/Avatar";
+import ConnectionBadge from "../components/ui/ConnectionBadge";
+import { useConnectionStatus } from "../hooks/useConnectionStatus";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -36,6 +38,29 @@ function OpponentLeftBanner({ name, onLeave }: { name: string; onLeave: () => vo
           </h2>
           <p className="font-mono text-xs text-muted">
             {name} disconnected. The match has ended.
+          </p>
+        </div>
+        <Button variant="primary" size="md" fullWidth onClick={onLeave}>
+          Back to Lobby
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ── You disconnected overlay ──────────────────────────────────────────────────
+
+function DisconnectedOverlay({ onLeave }: { onLeave: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-bg/80 backdrop-blur-sm">
+      <div className="bracket-card bg-surface border border-red/30 rounded-sm p-8 w-full max-w-sm flex flex-col gap-6 items-center text-center">
+        <span className="text-5xl">📡</span>
+        <div className="flex flex-col gap-2">
+          <h2 className="font-display text-3xl tracking-wide text-red">
+            Disconnected
+          </h2>
+          <p className="font-mono text-xs text-muted">
+            You lost connection to the server. The match may have ended.
           </p>
         </div>
         <Button variant="primary" size="md" fullWidth onClick={onLeave}>
@@ -69,9 +94,12 @@ function GameBar({ gameType, players, myId }: { gameType: GameType; players: Pla
       <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
         <span className="font-display text-xl tracking-arena text-text">ARENA</span>
 
-        <span className="font-mono text-xs text-muted tracking-widest uppercase">
-          {gameLabels[gameType] ?? gameType}
-        </span>
+        <div className="flex items-center gap-3">
+          <ConnectionBadge />
+          <span className="font-mono text-xs text-muted tracking-widest uppercase">
+            {gameLabels[gameType] ?? gameType}
+          </span>
+        </div>
 
         <div className="flex items-center gap-3">
           {me && (
@@ -112,6 +140,7 @@ export default function Game() {
 
   const [opponentLeft, setOpponentLeft] = useState(false);
   const [opponentName, setOpponentName] = useState("Opponent");
+  const connectionStatus = useConnectionStatus();
 
   // ── Guard: must have valid state to render ─────────────────────────────────
   useEffect(() => {
@@ -255,6 +284,11 @@ export default function Game() {
           name={opponentName}
           onLeave={() => navigate("/lobby")}
         />
+      )}
+
+      {/* You disconnected overlay — only show if opponent hasn't already left */}
+      {!opponentLeft && connectionStatus === "disconnected" && (
+        <DisconnectedOverlay onLeave={() => navigate("/lobby")} />
       )}
     </div>
   );

@@ -4,7 +4,7 @@ import { useLobby } from "../hooks/useLobby";
 import GameCard, { GAMES } from "../components/GameCard";
 import { CreatedRoomModal, JoinRoomModal } from "../components/InviteModal";
 import Avatar from "../components/ui/Avatar";
-import Badge from "../components/ui/Badge";
+import ConnectionBadge from "../components/ui/ConnectionBadge";
 import TriviaSetup from "../components/TriviaSetup";
 import type { AvatarColor } from "../types";
 // import Button from "../components/ui/Button";
@@ -50,10 +50,8 @@ function TopBar({
         {/* Right side */}
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
 
-          {/* Live badge — hidden on very small screens */}
-          <Badge variant="green" dot>
-            <span className="hidden sm:inline">Live</span>
-          </Badge>
+          {/* Connection status badge */}
+          <ConnectionBadge />
 
           {/* Join with code — highlighted amber button, always visible */}
           <button
