@@ -145,7 +145,7 @@ export default function TriviaSetup({ config, onChange }: Props) {
             <span className="font-mono text-[10px] text-dim">Min 3, max 20</span>
           </div>
 
-          <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto pr-1">
+          <div className="flex flex-col gap-1.5">
             {customQuestions.map((q, i) => (
               <QuestionCard
                 key={i}
@@ -236,7 +236,7 @@ function QuestionCard({
             placeholder="Question text…"
             maxLength={300}
             className="w-full bg-surface border border-border rounded-sm px-3 py-2
-                       font-mono text-xs text-text placeholder-dim outline-none
+                       font-mono text-[16px] sm:text-xs text-text placeholder-dim outline-none
                        focus:border-amber/60 transition-colors"
           />
 
@@ -269,7 +269,7 @@ function QuestionCard({
                   placeholder={`Option ${OPTION_LABELS[i]}`}
                   maxLength={200}
                   className="flex-1 min-w-0 bg-surface border border-border rounded-sm px-2 py-1.5
-                             font-mono text-[11px] text-text placeholder-dim outline-none
+                             font-mono text-[16px] sm:text-[11px] text-text placeholder-dim outline-none
                              focus:border-amber/60 transition-colors"
                 />
               </div>

@@ -35,8 +35,8 @@ export function CreatedRoomModal({ inviteCode, gameLabel, onCancel, roomUpdate, 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-bg/80 backdrop-blur-sm">
-      <Card brackets padded className="w-full max-w-sm flex flex-col gap-6">
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 sm:p-6 bg-bg/80 backdrop-blur-sm">
+      <Card brackets padded className="w-full max-w-sm flex flex-col gap-6 my-auto">
 
         {/* Header */}
         <div className="flex flex-col gap-1">
