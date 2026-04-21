@@ -16,6 +16,32 @@ export type TriviaConfig = {
   questions?: TriviaQuestion[];
 };
 
+export type TriviaPreset = {
+  id:        string;
+  name:      string;
+  questions: TriviaQuestion[];
+  createdAt: number;
+};
+
+// ── Preset localStorage helpers ────────────────────────────────────────────────
+
+const STORAGE_KEY = "trivia_presets";
+
+function loadPresets(): TriviaPreset[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function savePresets(presets: TriviaPreset[]): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(presets));
+}
+
 // ── Packs ─────────────────────────────────────────────────────────────────────
 
 const PACKS = [
@@ -45,6 +71,10 @@ type Props = {
 
 export default function TriviaSetup({ config, onChange }: Props) {
   const [expandedIdx, setExpandedIdx] = useState<number | null>(0);
+  const [presets, setPresets] = useState<TriviaPreset[]>(loadPresets);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [presetName, setPresetName] = useState("");
+  const [showPresets, setShowPresets] = useState(false);
 
   function setMode(mode: TriviaMode) {
     onChange({
@@ -73,6 +103,34 @@ export default function TriviaSetup({ config, onChange }: Props) {
   function updateQuestion(i: number, updated: TriviaQuestion) {
     const questions = (config.questions ?? []).map((q, idx) => (idx === i ? updated : q));
     onChange({ ...config, questions });
+  }
+
+  function savePreset() {
+    const name = presetName.trim();
+    if (!name) return;
+    const newPreset: TriviaPreset = {
+      id:        `${Date.now()}`,
+      name,
+      questions: (config.questions ?? []).filter(isQuestionValid),
+      createdAt: Date.now(),
+    };
+    const updated = [newPreset, ...presets];
+    savePresets(updated);
+    setPresets(updated);
+    setPresetName("");
+    setSaveDialogOpen(false);
+  }
+
+  function deletePreset(id: string) {
+    const updated = presets.filter((p) => p.id !== id);
+    savePresets(updated);
+    setPresets(updated);
+  }
+
+  function loadPreset(preset: TriviaPreset) {
+    onChange({ mode: "custom", questions: preset.questions });
+    setExpandedIdx(null);
+    setShowPresets(false);
   }
 
   const customQuestions = config.questions ?? [];
@@ -138,13 +196,72 @@ export default function TriviaSetup({ config, onChange }: Props) {
       {/* Custom questions */}
       {config.mode === "custom" && (
         <div className="flex flex-col gap-2">
+
+          {/* ── Presets bar ── */}
           <div className="flex items-center justify-between">
             <span className="font-mono text-[10px] text-dim">
               {validCount}/{customQuestions.length} questions ready
             </span>
-            <span className="font-mono text-[10px] text-dim">Min 3, max 20</span>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] text-dim">Min 3, max 20</span>
+              <button
+                onClick={() => setShowPresets((v) => !v)}
+                className={`font-mono text-[10px] px-2 py-1 rounded-sm border transition-colors ${
+                  showPresets
+                    ? "border-amber/40 bg-amber/10 text-amber"
+                    : "border-border text-dim hover:text-muted"
+                }`}
+              >
+                {presets.length > 0 ? `Saved (${presets.length})` : "Saved"}
+              </button>
+            </div>
           </div>
 
+          {/* ── Saved presets panel ── */}
+          {showPresets && (
+            <div className="flex flex-col gap-1.5 p-2.5 rounded-sm border border-amber/20 bg-amber/5">
+              <span className="font-mono text-[10px] text-amber tracking-widest uppercase">
+                Saved Question Sets
+              </span>
+              {presets.length === 0 ? (
+                <p className="font-mono text-[11px] text-dim">
+                  No saved presets yet. Build a question set and save it below.
+                </p>
+              ) : (
+                <div className="flex flex-col gap-1">
+                  {presets.map((preset) => (
+                    <div
+                      key={preset.id}
+                      className="flex items-center gap-2 px-3 py-2 rounded-sm border border-border bg-surface"
+                    >
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <span className="font-mono text-xs text-text truncate">{preset.name}</span>
+                        <span className="font-mono text-[10px] text-dim">
+                          {preset.questions.length} questions · {new Date(preset.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => loadPreset(preset)}
+                        className="font-mono text-[10px] px-2 py-1 rounded-sm border border-amber/40
+                                   bg-amber/10 text-amber hover:bg-amber/20 transition-colors shrink-0"
+                      >
+                        Load
+                      </button>
+                      <button
+                        onClick={() => deletePreset(preset.id)}
+                        className="font-mono text-[10px] px-2 py-1 rounded-sm border border-border
+                                   text-dim hover:text-red hover:border-red/40 transition-colors shrink-0"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Question cards ── */}
           <div className="flex flex-col gap-1.5">
             {customQuestions.map((q, i) => (
               <QuestionCard
@@ -173,6 +290,54 @@ export default function TriviaSetup({ config, onChange }: Props) {
             <p className="font-mono text-[10px] text-red/70">
               Need at least 3 fully filled-in questions to start.
             </p>
+          )}
+
+          {/* ── Save preset ── */}
+          {isCustomReady && (
+            <div className="mt-1">
+              {saveDialogOpen ? (
+                <div className="flex gap-2">
+                  <input
+                    autoFocus
+                    value={presetName}
+                    onChange={(e) => setPresetName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") savePreset();
+                      if (e.key === "Escape") { setSaveDialogOpen(false); setPresetName(""); }
+                    }}
+                    placeholder="Name this question set…"
+                    maxLength={60}
+                    className="flex-1 min-w-0 bg-surface border border-amber/40 rounded-sm px-3 py-1.5
+                               font-mono text-[16px] sm:text-xs text-text placeholder-dim outline-none
+                               focus:border-amber/70 transition-colors"
+                  />
+                  <button
+                    onClick={savePreset}
+                    disabled={!presetName.trim()}
+                    className="font-mono text-[10px] px-3 py-1.5 rounded-sm border border-amber/40
+                               bg-amber/10 text-amber hover:bg-amber/20 disabled:opacity-40
+                               disabled:cursor-not-allowed transition-colors shrink-0"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => { setSaveDialogOpen(false); setPresetName(""); }}
+                    className="font-mono text-[10px] px-2 py-1.5 rounded-sm border border-border
+                               text-dim hover:text-muted transition-colors shrink-0"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setSaveDialogOpen(true)}
+                  className="w-full py-2 rounded-sm border border-dashed border-amber/30 text-amber/70
+                             font-mono text-xs hover:border-amber/60 hover:text-amber transition-colors"
+                >
+                  💾 Save as preset
+                </button>
+              )}
+            </div>
           )}
         </div>
       )}
