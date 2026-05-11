@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import socket from "../socket";
+import socket, { wakeServer } from "../socket";
 import { useSession } from "../hooks/useSession";
 import Avatar from "../components/ui/Avatar";
 import Button from "../components/ui/Button";
@@ -46,11 +46,7 @@ export default function JoinViaLink() {
 
     const name        = session?.name        ?? nameInput.trim();
     const avatarColor = session?.avatarColor ?? color;
-
-    if (!socket.connected) socket.connect();
-
-    socket.emit("set_session", { name, avatarColor });
-    socket.emit("join_room", { inviteCode: code.toUpperCase() });
+    let cancelled = false;
 
     socket.on("join_error", (data: { message: string }) => {
       setErrorMsg(data.message);
@@ -75,7 +71,15 @@ export default function JoinViaLink() {
       navigate("/lobby", { replace: true });
     });
 
+    wakeServer().then(() => {
+      if (cancelled) return;
+      if (!socket.connected) socket.connect();
+      socket.emit("set_session", { name, avatarColor });
+      socket.emit("join_room", { inviteCode: code.toUpperCase() });
+    });
+
     return () => {
+      cancelled = true;
       socket.off("join_error");
       socket.off("match_found");
       socket.off("room_player_update");
