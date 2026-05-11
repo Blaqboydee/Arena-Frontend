@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import socket, { wakeServer } from "../socket";
+import socket from "../socket";
 import { useSession } from "./useSession";
 import type { GameType, Player } from "../types";
 import type { TriviaConfig } from "../components/TriviaSetup";
@@ -42,8 +42,6 @@ export function useLobby() {
   useEffect(() => {
     if (!session) return; // Guard: session must exist before connecting
 
-    let cancelled = false;
-
     // Register listeners now — they'll fire once the socket connects
     // ── Incoming events ────────────────────────────────────────────────────
     socket.on("lobby_counts", (counts: QueueCounts) => {
@@ -82,19 +80,16 @@ export function useLobby() {
       }
     );
 
-    // Wait for server to wake, then connect and announce presence
-    wakeServer().then(() => {
-      if (cancelled) return;
-      if (!socket.connected) socket.connect();
-      socket.emit("set_session", {
-        name:        session!.name,
-        avatarColor: session!.avatarColor,
-      });
-      socket.emit("join_lobby");
+    // Connect immediately — timeout:65s handles cold Render starts.
+    // wakeServer() pre-warms in the background (best-effort).
+    if (!socket.connected) socket.connect();
+    socket.emit("set_session", {
+      name:        session.name,
+      avatarColor: session.avatarColor,
     });
+    socket.emit("join_lobby");
 
     return () => {
-      cancelled = true;
       // Unsubscribe lobby events only — do NOT disconnect.
       // The socket stays alive so /game/:roomId can reuse the same connection.
       socket.emit("leave_lobby");

@@ -20,14 +20,14 @@ const socket: Socket = io(BACKEND_URL, {
   reconnection: true,
   reconnectionAttempts: 10,
   reconnectionDelay: 1000,
-  timeout: 30000,
+  timeout: 65000,   // 65 s > Render free-tier cold-start (~55 s)
 });
 
 // ── Server wake-up machinery ──────────────────────────────────────────────────
-// Render free tier cold-starts take ~55s, which exceeds the 30s socket timeout.
-// Strategy: hit /ping (cheap HTTP) the moment the app loads so the cold-start
-// clock begins immediately.  socket.connect() is only called after /ping
-// resolves, guaranteeing the server is warm when the WebSocket handshake fires.
+// Render free tier cold-starts take ~55 s.  We fire a lightweight GET /ping the
+// moment the bundle loads so the server is warming up while the user is still on
+// the landing page.  socket.connect() is called directly (not gated on this
+// ping) — the 65 s timeout above is the safety net if the server is still cold.
 
 type WakeListener = () => void;
 const _wakeListeners = new Set<WakeListener>();
