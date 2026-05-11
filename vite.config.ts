@@ -4,7 +4,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ['eugenio-moira-lowell.ngrok-free.dev'],
+    host: true,
+    allowedHosts: true,
     proxy: {
       '/socket.io': {
         target: 'http://localhost:3000',
