@@ -82,6 +82,17 @@ export function useLobby() {
       }
     );
 
+    // Wait for server to wake, then connect and announce presence
+    wakeServer().then(() => {
+      if (cancelled) return;
+      if (!socket.connected) socket.connect();
+      socket.emit("set_session", {
+        name:        session!.name,
+        avatarColor: session!.avatarColor,
+      });
+      socket.emit("join_lobby");
+    });
+
     return () => {
       cancelled = true;
       // Unsubscribe lobby events only — do NOT disconnect.
@@ -93,17 +104,6 @@ export function useLobby() {
       socket.off("match_found");
       socket.off("room_player_update");
     };
-
-    // Wait for server to wake, then connect and announce presence
-    wakeServer().then(() => {
-      if (cancelled) return;
-      if (!socket.connected) socket.connect();
-      socket.emit("set_session", {
-        name:        session!.name,
-        avatarColor: session!.avatarColor,
-      });
-      socket.emit("join_lobby");
-    });
   }, [session, navigate]);
 
   // ── Actions ────────────────────────────────────────────────────────────────
