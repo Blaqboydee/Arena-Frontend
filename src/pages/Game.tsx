@@ -15,6 +15,7 @@ import BombDefusal from "../components/games/BombDefusal";
 import Button from "../components/ui/Button";
 import Avatar from "../components/ui/Avatar";
 import ConnectionBadge from "../components/ui/ConnectionBadge";
+import PromoModal from "../components/ui/PromoModal";
 import { useConnectionStatus } from "../hooks/useConnectionStatus";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -140,6 +141,7 @@ export default function Game() {
 
   const [opponentLeft, setOpponentLeft] = useState(false);
   const [opponentName, setOpponentName] = useState("Opponent");
+  const [showPromo, setShowPromo]         = useState(false);
   const connectionStatus = useConnectionStatus();
 
   // ── Guard: must have valid state to render ─────────────────────────────────
@@ -175,6 +177,32 @@ export default function Game() {
       socket.off("opponent_left");
     };
   }, [state]);
+
+  // ── Promo modal — show after any game ends ────────────────────────────────
+  useEffect(() => {
+    const GAME_OVER_EVENTS = [
+      "game_result",
+      "ttt_match_over",
+      "hm_match_over",
+      "c4_match_over",
+      "wdl_match_over",
+      "wyr_match_over",
+      "mem_match_over",
+      "triv_match_over",
+      "bomb_result",
+    ] as const;
+
+    let timer: ReturnType<typeof setTimeout>;
+    const handler = () => {
+      timer = setTimeout(() => setShowPromo(true), 3500);
+    };
+
+    GAME_OVER_EVENTS.forEach((ev) => socket.on(ev, handler));
+    return () => {
+      clearTimeout(timer);
+      GAME_OVER_EVENTS.forEach((ev) => socket.off(ev, handler));
+    };
+  }, []);
 
   // ── Guard render ───────────────────────────────────────────────────────────
   if (!state?.gameType || !state?.players || !state?.yourId || !roomId) {
@@ -290,6 +318,9 @@ export default function Game() {
       {!opponentLeft && connectionStatus === "disconnected" && (
         <DisconnectedOverlay onLeave={() => navigate("/lobby")} />
       )}
+
+      {/* Promo modal */}
+      {showPromo && <PromoModal onClose={() => setShowPromo(false)} />}
     </div>
   );
 }
