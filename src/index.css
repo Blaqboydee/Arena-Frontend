@@ -149,3 +149,37 @@ body {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
+
+/* ── Fast random-movement particles (landing background) ── */
+@keyframes drift-a {
+  0%   { transform: translate(0, 0) scale(1); }
+  25%  { transform: translate(60vw, 18vh) scale(1.4); }
+  50%  { transform: translate(22vw, 70vh) scale(0.7); }
+  75%  { transform: translate(80vw, 48vh) scale(1.2); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes drift-b {
+  0%   { transform: translate(0, 0) scale(1); }
+  20%  { transform: translate(-50vw, 40vh) scale(0.8); }
+  45%  { transform: translate(-12vw, -30vh) scale(1.5); }
+  70%  { transform: translate(-70vw, 12vh) scale(1.1); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes drift-c {
+  0%   { transform: translate(0, 0) scale(1); }
+  30%  { transform: translate(35vw, -55vh) scale(1.3); }
+  55%  { transform: translate(-40vw, -20vh) scale(0.6); }
+  80%  { transform: translate(48vw, -65vh) scale(1.4); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes drift-d {
+  0%   { transform: translate(0, 0) scale(1); }
+  25%  { transform: translate(-30vw, 55vh) scale(1.2); }
+  50%  { transform: translate(55vw, 25vh) scale(0.7); }
+  75%  { transform: translate(-18vw, 68vh) scale(1.5); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle { animation: none !important; }
+}

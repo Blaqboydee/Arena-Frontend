@@ -203,6 +203,49 @@ function GameBgSlideshow() {
   );
 }
 
+// ── Fast random-movement particle field ──────────────────────────────────────
+const PARTICLE_COLORS = ['#F5A623', '#3dffa0', '#ff4d6d', '#e8e8e8'];
+const DRIFT = ['drift-a', 'drift-b', 'drift-c', 'drift-d'];
+
+const PARTICLES = Array.from({ length: 28 }, (_, i) => {
+  const seed = (i * 9301 + 49297) % 233280;
+  const rnd = (n: number) => ((seed * (n + 1)) % 233280) / 233280;
+  return {
+    id: i,
+    left: `${(rnd(1) * 100).toFixed(2)}%`,
+    top: `${(rnd(2) * 100).toFixed(2)}%`,
+    size: 3 + Math.round(rnd(3) * 6),       // 3–9px
+    color: PARTICLE_COLORS[i % PARTICLE_COLORS.length],
+    drift: DRIFT[i % DRIFT.length],
+    duration: (3 + rnd(4) * 4).toFixed(2),   // 3–7s → fast
+    delay: (-rnd(5) * 7).toFixed(2),
+  };
+});
+
+function ParticleField() {
+  return (
+    <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+      {PARTICLES.map((p) => (
+        <span
+          key={p.id}
+          className="particle absolute rounded-full"
+          style={{
+            left: p.left,
+            top: p.top,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            background: p.color,
+            opacity: 0.5,
+            boxShadow: `0 0 ${p.size * 2}px ${p.color}`,
+            animation: `${p.drift} ${p.duration}s ${p.delay}s linear infinite`,
+            willChange: 'transform',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 // ── Games strip – auto-scrolling marquee ticker ───────────────────────────────
 const ALL_GAMES = [
   "Reaction", "Tic Tac Toe", "Hangman", "Connect Four",
@@ -290,6 +333,7 @@ export default function Landing() {
     <div className="noise-bg min-h-screen flex flex-col bg-bg relative overflow-hidden">
       <GridLines />
       <GameBgSlideshow />
+      <ParticleField />
 
       {/* ── Top stat bar ── */}
       <div className="relative z-10">

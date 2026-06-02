@@ -21,24 +21,25 @@ type Props = {
   anyQueuing: boolean;      // any game is being queued (disables others)
   onQuickMatch: () => void;
   onPrivateRoom: () => void;
+  onJoinRoom: () => void;
   onCancel: () => void;
 };
 
 export const GAMES: GameMeta[] = [
-  {
-    gameType:    "reaction",
-    label:       "Reaction",
-    description: "First to click when the light goes green. Pure reflex.",
-    icon:        "⚡",
-    available:   true,
-    playerCount: { min: 2, max: 2 },
-    howToPlay: [
-      "A coloured circle appears on screen.",
-      "Wait for it to turn GREEN — then tap as fast as you can!",
-      "The player with the faster reaction time wins the round.",
-      "Best of multiple rounds decides the match.",
-    ],
-  },
+  // {
+  //   gameType:    "reaction",
+  //   label:       "Reaction",
+  //   description: "First to click when the light goes green. Pure reflex.",
+  //   icon:        "⚡",
+  //   available:   true,
+  //   playerCount: { min: 2, max: 2 },
+  //   howToPlay: [
+  //     "A coloured circle appears on screen.",
+  //     "Wait for it to turn GREEN — then tap as fast as you can!",
+  //     "The player with the faster reaction time wins the round.",
+  //     "Best of multiple rounds decides the match.",
+  //   ],
+  // },
   {
     gameType:    "tictactoe",
     label:       "Tic Tac Toe",
@@ -131,10 +132,10 @@ export const GAMES: GameMeta[] = [
   {
     gameType:    "triviaroyale",
     label:       "Trivia Royale",
-    description: "Answer fast, score big. Party trivia for 3–8 players.",
+    description: "Answer fast, score big. Party trivia for 3–10 players.",
     icon:        "🧠",
     available:   true,
-    playerCount: { min: 3, max: 8 },
+    playerCount: { min: 3, max: 10 },
     howToPlay: [
       "Everyone answers the same multiple-choice question simultaneously.",
       "Faster correct answers earn more points.",
@@ -149,7 +150,7 @@ export const GAMES: GameMeta[] = [
     description: "Co-op chaos. One sees the bomb, the others read the manual.",
     icon:        "💣",
     available:   true,
-    playerCount: { min: 2, max: 4 },
+    playerCount: { min: 2, max: 10 },
     howToPlay: [
       "One player is the Defuser — they see the bomb's modules.",
       "Other players are Experts — they have the instruction manual.",
@@ -222,6 +223,7 @@ export default function GameCard({
   anyQueuing,
   onQuickMatch,
   onPrivateRoom,
+  onJoinRoom,
   onCancel,
 }: Props) {
   const [showHowTo, setShowHowTo] = useState(false);
@@ -340,6 +342,15 @@ export default function GameCard({
                 onClick={onPrivateRoom}
               >
                 Create Room
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                fullWidth
+                disabled={disabled}
+                onClick={onJoinRoom}
+              >
+                Join Room
               </Button>
             </>
           ) : (

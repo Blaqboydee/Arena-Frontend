@@ -39,8 +39,8 @@ function TopBar({
   onLeave: () => void;
 }) {
   return (
-    <div className="relative z-10 border-b border-border bg-surface/80 backdrop-blur-sm">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+    <div className="sticky top-0 z-30 border-b border-border bg-surface/90 backdrop-blur-md">
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-2 sm:gap-3">
 
         {/* Wordmark */}
         <span className="font-display text-xl tracking-arena text-text shrink-0">
@@ -153,7 +153,7 @@ export default function Lobby() {
   const anyQueuing = phase === "queuing" || phase === "creating_room";
 
   return (
-    <div className="noise-bg min-h-screen flex flex-col bg-bg relative overflow-hidden">
+    <div className="noise-bg min-h-screen flex flex-col bg-bg relative">
       <GridLines />
 
       {/* Top bar */}
@@ -196,6 +196,7 @@ export default function Lobby() {
                       anyQueuing={anyQueuing}
                       onQuickMatch={() => findMatch(game.gameType)}
                       onPrivateRoom={() => createRoom(game.gameType)}
+                      onJoinRoom={openJoinDialog}
                       onCancel={cancelMatch}
                     />
                   ))}
@@ -220,6 +221,7 @@ export default function Lobby() {
                       anyQueuing={anyQueuing}
                       onQuickMatch={() => findMatch(game.gameType)}
                       onPrivateRoom={() => createRoom(game.gameType)}
+                      onJoinRoom={openJoinDialog}
                       onCancel={cancelMatch}
                     />
                   ))}
