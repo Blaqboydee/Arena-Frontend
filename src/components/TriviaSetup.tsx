@@ -128,7 +128,7 @@ export default function TriviaSetup({ config, onChange }: Props) {
   }
 
   function loadPreset(preset: TriviaPreset) {
-    onChange({ mode: "custom", questions: preset.questions });
+    onChange({ mode: "custom", questions: preset.questions.slice(0, 20) });
     setExpandedIdx(null);
     setShowPresets(false);
   }
