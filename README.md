@@ -89,9 +89,3 @@ npm run dev      # expects the backend on localhost:3000 (see vite.config.ts pro
 - 🔔 Push notifications for game invites
 - 🏪 Play Store release
 - 🍎 iOS version
-
----
-
-## 📄 License
-
-MIT
