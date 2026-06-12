@@ -7,9 +7,18 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:sync": "npx cap sync",
+    "android:add": "npx cap add android",
+    "android:open": "npx cap open android",
+    "emulator": "start \"\" %LOCALAPPDATA%\\Android\\Sdk\\emulator\\emulator.exe -avd Pixel_10_Pro_XL",
+    "android:apk": "npm run build && npx cap sync && cd android && set \"JAVA_HOME=C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.11.10-hotspot\" && set \"JAVA_TOOL_OPTIONS=-Djava.net.preferIPv4Stack=true\" && .\\gradlew.bat assembleDebug",
+    "android:install": "%LOCALAPPDATA%\\Android\\Sdk\\platform-tools\\adb.exe install -r android/app/build/outputs/apk/debug/arena.apk"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/app": "^8.1.0",
+    "@capacitor/core": "^8.4.0",
     "html-to-image": "^1.11.13",
     "lucide-react": "^1.7.0",
     "react": "^19.2.4",
@@ -18,7 +27,10 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.4.0",
     "@eslint/js": "^9.39.4",
+    "@img/sharp-win32-x64": "^0.35.1",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -30,6 +42,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
     "postcss": "^8.5.8",
+    "sharp": "^0.35.1",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",

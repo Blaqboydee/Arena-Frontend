@@ -1,0 +1,10 @@
+{
+  "appId": "com.dee.apps.arena",
+  "appName": "Arena",
+  "webDir": "dist",
+  "backgroundColor": "#060608",
+  "server": {
+    "androidScheme": "https",
+    "hostname": "arenagameplay.vercel.app"
+  }
+}
