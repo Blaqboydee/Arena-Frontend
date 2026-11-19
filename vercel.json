@@ -1,18 +1,4 @@
 {
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "arenagameplay.vercel.app" }],
-      "destination": "https://arenagameplay.app/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.arenagameplay.app" }],
-      "destination": "https://arenagameplay.app/:path*",
-      "permanent": true
-    }
-  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
