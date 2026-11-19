@@ -334,7 +334,7 @@ export default function Landing() {
   }
 
   return (
-    <div className="noise-bg min-h-screen flex flex-col bg-bg relative overflow-hidden">
+    <div className="noise-bg min-h-[100dvh] flex flex-col bg-bg relative overflow-hidden">
       <GridLines />
       <GameBgSlideshow />
       <ParticleField />
@@ -345,10 +345,10 @@ export default function Landing() {
       </div>
 
       {/* ── Hero ── */}
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-16 gap-12">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 sm:px-6 py-6 sm:py-16 gap-5 sm:gap-12">
 
         {/* Platform title */}
-        <div className="flex flex-col items-center gap-3 slide-up-1">
+        <div className="flex flex-col items-center gap-2 sm:gap-3 slide-up-1">
           {/* Overline */}
           <div className="rule-label w-64">
             <span>Multiplayer Games</span>
@@ -356,7 +356,7 @@ export default function Landing() {
 
           {/* Main logo */}
           <div className="relative scanlines">
-            <h1 className="font-display font-800 text-[clamp(5rem,18vw,14rem)] tracking-arena text-text leading-none flicker select-none">
+            <h1 className="font-display font-800 text-[clamp(3.25rem,15vw,14rem)] tracking-arena text-text leading-none flicker select-none">
               ARENA
             </h1>
             {/* Amber underline bar */}
@@ -364,13 +364,13 @@ export default function Landing() {
           </div>
 
           {/* Tagline */}
-          <p className="font-mono text-sm text-muted tracking-widest mt-4">
+          <p className="font-mono text-xs sm:text-sm text-muted tracking-widest mt-2 sm:mt-4">
             1v1 · No signup · No mercy
           </p>
         </div>
 
         {/* ── Entry card ── */}
-        <div className="bracket-card bg-surface border border-border rounded-sm p-8 w-full max-w-md flex flex-col gap-6 slide-up-3">
+        <div className="bracket-card bg-surface border border-border rounded-sm p-5 sm:p-8 w-full max-w-md flex flex-col gap-4 sm:gap-6 slide-up-3">
 
           {/* Section label */}
           <div className="rule-label">
@@ -422,15 +422,17 @@ export default function Landing() {
           </Button>
         </div>
 
-        {/* ── Games strip – live ticker ── */}
-        <GamesStrip />
+        {/* ── Games strip – live ticker (hidden on phones to fit the fold) ── */}
+        <div className="hidden sm:block w-full">
+          <GamesStrip />
+        </div>
 
         {/* ── Live leaderboard teaser ── */}
         <LeaderboardTeaser />
       </main>
 
       {/* ── Footer ── */}
-      <footer className="relative z-10 border-t border-border py-4 px-6 flex items-center justify-between flex-wrap gap-3">
+      <footer className="relative z-10 border-t border-border py-2.5 sm:py-4 px-5 sm:px-6 flex items-center justify-between flex-wrap gap-3">
         <p className="font-mono text-[10px] text-dim tracking-widest uppercase">
           Arena · Made by <a href="https://github.com/Blaqboydee" className="text-amber hover:underline">Blaqboydee</a>
         </p>
@@ -438,7 +440,7 @@ export default function Landing() {
           href="https://github.com/Blaqboydee/Arena-Frontend"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 border border-border rounded-sm px-3 py-1.5 bg-surface/50 hover:border-amber/40 hover:bg-elevated transition-colors duration-150 group"
+          className="hidden sm:flex items-center gap-2 border border-border rounded-sm px-3 py-1.5 bg-surface/50 hover:border-amber/40 hover:bg-elevated transition-colors duration-150 group"
         >
           {/* GitHub star icon */}
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-muted group-hover:text-amber transition-colors duration-150">
