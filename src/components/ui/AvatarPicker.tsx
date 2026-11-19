@@ -1,20 +1,17 @@
 import BoringAvatar from "boring-avatars";
-import type { AvatarColor } from "../../types";
-import { avatarPalette, AVATAR_SEEDS } from "../../lib/avatar";
+import { avatarPalette, colorFromSeed, AVATAR_SEEDS } from "../../lib/avatar";
 
 type Props = {
   value: string;              // currently selected seed ("" = none)
   onChange: (seed: string) => void;
-  color: AvatarColor;         // themes the preview avatars
 };
 
-export default function AvatarPicker({ value, onChange, color }: Props) {
-  const palette = avatarPalette(color);
-
+export default function AvatarPicker({ value, onChange }: Props) {
   return (
     <div className="grid grid-cols-6 gap-2">
       {AVATAR_SEEDS.map((seed) => {
         const active = value === seed;
+        const palette = avatarPalette(colorFromSeed(seed));
         return (
           <button
             key={seed}

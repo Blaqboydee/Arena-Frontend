@@ -22,3 +22,13 @@ export const AVATAR_SEEDS = [
   "blaze", "nova", "turbo", "echo", "ghost", "volt",
   "rune", "zephyr", "comet", "hydra", "onyx", "pixel",
 ];
+
+// Deterministically derive an accent color from a seed, so each avatar keeps a
+// consistent tint without the player choosing a color separately.
+const COLORS: AvatarColor[] = ["amber", "cyan", "rose", "violet", "emerald", "sky"];
+
+export function colorFromSeed(seed: string): AvatarColor {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  return COLORS[h % COLORS.length];
+}

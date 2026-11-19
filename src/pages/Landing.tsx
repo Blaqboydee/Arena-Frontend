@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { AvatarColor } from "../types";
 import { useSession } from "../hooks/useSession";
 import Button from "../components/ui/Button";
 import Avatar from "../components/ui/Avatar";
-import ColorPicker from "../components/ui/ColorPicker";
 import AvatarPicker from "../components/ui/AvatarPicker";
+import { colorFromSeed } from "../lib/avatar";
 import LeaderboardTeaser from "../components/LeaderboardTeaser";
 import Badge from "../components/ui/Badge";
 
@@ -314,9 +313,10 @@ export default function Landing() {
   const { setSession } = useSession();
 
   const [name, setName] = useState("");
-  const [color, setColor] = useState<AvatarColor>("amber");
   const [avatar, setAvatar] = useState("");
   const [error, setError] = useState("");
+  // Accent color is derived from the chosen avatar (no separate color picker).
+  const color = colorFromSeed(avatar || name || "arena");
 
   function handleEnter() {
     const trimmed = name.trim();
@@ -406,15 +406,7 @@ export default function Landing() {
             <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
               Choose avatar
             </span>
-            <AvatarPicker value={avatar} onChange={setAvatar} color={color} />
-          </div>
-
-          {/* Color picker */}
-          <div className="flex flex-col gap-2">
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
-              Arena color
-            </span>
-            <ColorPicker value={color} onChange={setColor} />
+            <AvatarPicker value={avatar} onChange={setAvatar} />
           </div>
 
           {/* CTA */}

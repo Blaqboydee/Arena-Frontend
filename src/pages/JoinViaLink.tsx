@@ -4,8 +4,8 @@ import socket from "../socket";
 import { useSession } from "../hooks/useSession";
 import Avatar from "../components/ui/Avatar";
 import Button from "../components/ui/Button";
-import ColorPicker from "../components/ui/ColorPicker";
-import type { AvatarColor, GameType, Player } from "../types";
+import { colorFromSeed } from "../lib/avatar";
+import type { GameType, Player } from "../types";
 
 type Phase =
   | "enter_name"   // no session yet — show name form
@@ -36,9 +36,11 @@ export default function JoinViaLink() {
 
   const [phase, setPhase]       = useState<Phase>(session ? "joining" : "enter_name");
   const [nameInput, setNameInput] = useState("");
-  const [color, setColor]       = useState<AvatarColor>("amber");
   const [nameError, setNameError] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Accent color derived from the chosen avatar / name (no separate picker).
+  const color = colorFromSeed(session?.avatar || nameInput || "arena");
 
   // ── Attempt to join once we have a session ─────────────────────────────────
   useEffect(() => {
@@ -153,14 +155,6 @@ export default function JoinViaLink() {
                   <p className="font-mono text-[11px] text-red">{nameError}</p>
                 )}
               </div>
-            </div>
-
-            {/* Color picker */}
-            <div className="flex flex-col gap-2">
-              <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
-                Arena color
-              </span>
-              <ColorPicker value={color} onChange={setColor} />
             </div>
 
             <Button variant="primary" size="md" fullWidth onClick={handleEnter}
