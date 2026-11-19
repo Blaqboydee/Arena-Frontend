@@ -5,6 +5,7 @@ import GameCard, { GAMES } from "../components/GameCard";
 import { CreatedRoomModal, JoinRoomModal } from "../components/InviteModal";
 import Avatar from "../components/ui/Avatar";
 import ConnectionBadge from "../components/ui/ConnectionBadge";
+import { getUserId } from "../socket";
 import TriviaSetup from "../components/TriviaSetup";
 import type { AvatarColor } from "../types";
 // import Button from "../components/ui/Button";
@@ -38,6 +39,7 @@ function TopBar({
   onJoinRoom: () => void;
   onLeave: () => void;
 }) {
+  const navigate = useNavigate();
   return (
     <div className="sticky top-0 z-30 border-b border-border bg-surface/90 backdrop-blur-md">
       <div className="max-w-5xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-2 sm:gap-3">
@@ -52,6 +54,21 @@ function TopBar({
 
           {/* Connection status badge */}
           <ConnectionBadge />
+
+          {/* Leaderboard */}
+          <button
+            onClick={() => navigate("/leaderboard")}
+            title="Leaderboard"
+            className="
+              flex items-center gap-1.5 shrink-0
+              text-muted hover:text-amber active:scale-95
+              font-mono text-[11px] sm:text-xs tracking-widest uppercase
+              px-2 py-2 rounded-sm transition-all duration-150
+            "
+          >
+            <span className="text-sm leading-none">🏆</span>
+            <span className="hidden sm:inline">Ranks</span>
+          </button>
 
           {/* Join with code — highlighted amber button, always visible */}
           <button
@@ -84,14 +101,18 @@ function TopBar({
           {/* Divider */}
           <div className="w-px h-5 bg-border shrink-0" />
 
-          {/* Player identity */}
-          <div className="flex items-center gap-2 min-w-0">
+          {/* Player identity → your profile */}
+          <button
+            onClick={() => { const id = getUserId(); if (id) navigate(`/profile/${id}`); }}
+            title="Your profile"
+            className="flex items-center gap-2 min-w-0 hover:opacity-80 active:scale-95 transition-all duration-150"
+          >
             <Avatar name={name} color={avatarColor} size="sm" />
             {/* Name — hidden on small screens to save space */}
             <span className="font-mono text-xs text-muted truncate hidden sm:block max-w-[120px]">
               {name}
             </span>
-          </div>
+          </button>
 
           {/* Leave — text on sm+, minimal on xs */}
           <button

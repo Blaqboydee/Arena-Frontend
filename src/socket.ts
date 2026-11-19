@@ -29,7 +29,8 @@ function setGuestToken(token: string): void {
   try { localStorage.setItem(GUEST_TOKEN_KEY, token); } catch { /* storage blocked */ }
 }
 
-let _userId: string | null = null;
+const USER_ID_KEY = "arena_user_id";
+let _userId: string | null = (() => { try { return localStorage.getItem(USER_ID_KEY); } catch { return null; } })();
 export function getUserId(): string | null { return _userId; }
 
 const socket: Socket = io(BACKEND_URL, {
@@ -48,7 +49,10 @@ const socket: Socket = io(BACKEND_URL, {
 // next connection (even after a reload) re-uses the same guest User.
 socket.on("identity", (data: { userId?: string; token?: string }) => {
   if (data?.token)  setGuestToken(data.token);
-  if (data?.userId) _userId = data.userId;
+  if (data?.userId) {
+    _userId = data.userId;
+    try { localStorage.setItem(USER_ID_KEY, data.userId); } catch { /* storage blocked */ }
+  }
 });
 
 // ── Server wake-up machinery ──────────────────────────────────────────────────

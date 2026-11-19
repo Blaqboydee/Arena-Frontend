@@ -6,6 +6,8 @@ import Landing     from "./pages/Landing";
 import Lobby       from "./pages/Lobby";
 import JoinViaLink from "./pages/JoinViaLink";
 import Game        from "./pages/Game";
+import Leaderboard from "./pages/Leaderboard";
+import Profile     from "./pages/Profile";
 
 // Android hardware back button: go back through pages, minimize from the landing page
 function BackButtonHandler() {
@@ -39,6 +41,8 @@ export default function App() {
         <Route path="/lobby"        element={<Lobby />} />
         <Route path="/join/:code"   element={<JoinViaLink />} />
         <Route path="/game/:roomId" element={<Game />} />
+        <Route path="/leaderboard"  element={<Leaderboard />} />
+        <Route path="/profile/:id"  element={<Profile />} />
         <Route path="*"             element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
