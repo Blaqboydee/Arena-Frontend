@@ -92,36 +92,36 @@ function GameBar({ gameType, players, myId }: { gameType: GameType; players: Pla
 
   return (
     <div className="relative z-10 border-b border-border bg-surface/80 backdrop-blur-sm">
-      <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
-        <span className="font-display text-xl tracking-arena text-text">ARENA</span>
-
-        <div className="flex items-center gap-3">
-          <ConnectionBadge />
-          <span className="font-mono text-xs text-muted tracking-widest uppercase">
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2">
+        {/* Left: brand + game */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          <span className="font-display text-base sm:text-xl tracking-arena text-text shrink-0">ARENA</span>
+          <span className="w-px h-4 bg-border shrink-0" />
+          <span className="font-mono text-[10px] sm:text-xs text-muted tracking-widest uppercase truncate">
             {gameLabels[gameType] ?? gameType}
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Right: connection + players (names hidden on phones) */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <ConnectionBadge />
           {me && (
             <div className="flex items-center gap-1.5">
               <Avatar name={me.name} color={me.avatarColor} seed={me.avatar} size="sm" />
-              <span className="font-mono text-xs text-muted">{me.name}</span>
+              <span className="font-mono text-xs text-muted hidden sm:inline max-w-[80px] truncate">{me.name}</span>
             </div>
           )}
           {others.length === 1 && (
             <>
-              <span className="font-mono text-xs text-dim">vs</span>
+              <span className="font-mono text-[10px] text-dim">vs</span>
               <div className="flex items-center gap-1.5">
                 <Avatar name={others[0].name} color={others[0].avatarColor} seed={others[0].avatar} size="sm" />
-                <span className="font-mono text-xs text-muted">{others[0].name}</span>
+                <span className="font-mono text-xs text-muted hidden sm:inline max-w-[80px] truncate">{others[0].name}</span>
               </div>
             </>
           )}
           {others.length > 1 && (
-            <span className="font-mono text-xs text-dim">
-              +{others.length} players
-            </span>
+            <span className="font-mono text-xs text-dim">+{others.length}</span>
           )}
         </div>
       </div>
