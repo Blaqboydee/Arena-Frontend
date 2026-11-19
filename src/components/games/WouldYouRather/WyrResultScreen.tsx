@@ -30,7 +30,7 @@ export default function WyrResultScreen({ matchOver, players, myId }: Props) {
     ? { label: "HALF & HALF", color: "text-muted", emoji: "⚖️" }
     : { label: "POLAR OPPOSITES", color: "text-red", emoji: "🔥" };
 
-  const shareText = `${pct}% compatible with ${opponent?.name ?? "my friend"} in Would You Rather on ARENA ⚡ ${vibe.label} · arenagameplay.vercel.app`;
+  const shareText = `${pct}% compatible with ${opponent?.name ?? "my friend"} in Would You Rather on ARENA ⚡ ${vibe.label} · arenagameplay.app`;
 
   const {
     cardRef, sharing, copyDone, downloadDone,

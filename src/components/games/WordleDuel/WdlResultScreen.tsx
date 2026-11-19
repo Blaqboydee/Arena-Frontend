@@ -25,10 +25,10 @@ export default function WdlResultScreen({ matchOver, players, myId }: Props) {
   const oppScore = opponent ? (matchOver.scores[opponent.id] ?? 0) : 0;
 
   const shareText = isDraw
-    ? `Drew ${myScore}-${oppScore} after ${matchOver.totalRounds} rounds in Wordle Duel on ARENA ⚡ arenagameplay.vercel.app`
+    ? `Drew ${myScore}-${oppScore} after ${matchOver.totalRounds} rounds in Wordle Duel on ARENA ⚡ arenagameplay.app`
     : iWon
-    ? `Beat ${opponent?.name ?? "my opponent"} ${myScore}-${oppScore} in Wordle Duel on ARENA ⚡ arenagameplay.vercel.app`
-    : `Lost to ${matchOver.winnerName} ${oppScore}-${myScore} in Wordle Duel on ARENA ⚡ arenagameplay.vercel.app`;
+    ? `Beat ${opponent?.name ?? "my opponent"} ${myScore}-${oppScore} in Wordle Duel on ARENA ⚡ arenagameplay.app`
+    : `Lost to ${matchOver.winnerName} ${oppScore}-${myScore} in Wordle Duel on ARENA ⚡ arenagameplay.app`;
 
   const {
     cardRef, sharing, copyDone, downloadDone,

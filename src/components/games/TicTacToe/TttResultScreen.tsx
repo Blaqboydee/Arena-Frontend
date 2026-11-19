@@ -25,10 +25,10 @@ export default function TttResultScreen({ matchOver, players, myId }: Props) {
   const oppScore = opponent ? (matchOver.scores[opponent.id] ?? 0) : 0;
 
   const shareText = isDraw
-    ? `Drew ${myScore}-${oppScore} after ${matchOver.totalRounds} rounds on ARENA ⚡ arenagameplay.vercel.app`
+    ? `Drew ${myScore}-${oppScore} after ${matchOver.totalRounds} rounds on ARENA ⚡ arenagameplay.app`
     : iWon
-    ? `Beat ${opponent?.name ?? "my opponent"} ${myScore}-${oppScore} in Tic Tac Toe on ARENA ⚡ arenagameplay.vercel.app`
-    : `Lost to ${matchOver.winnerName} ${oppScore}-${myScore} in Tic Tac Toe on ARENA ⚡ arenagameplay.vercel.app`;
+    ? `Beat ${opponent?.name ?? "my opponent"} ${myScore}-${oppScore} in Tic Tac Toe on ARENA ⚡ arenagameplay.app`
+    : `Lost to ${matchOver.winnerName} ${oppScore}-${myScore} in Tic Tac Toe on ARENA ⚡ arenagameplay.app`;
 
   const {
     cardRef,

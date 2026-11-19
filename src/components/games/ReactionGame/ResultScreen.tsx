@@ -25,8 +25,8 @@ export default function ResultScreen({ result, players, myId, scores }: Props) {
   const oppScore   = opponent ? (scores[opponent.id] ?? 0) : 0;
 
   const shareText = iWon
-    ? `Beat ${opponent?.name ?? "my opponent"} ${myScore}-${oppScore} in Reaction on ARENA ⚡ arenagameplay.vercel.app`
-    : `Lost to ${winnerName} ${oppScore}-${myScore} in Reaction on ARENA ⚡ arenagameplay.vercel.app`;
+    ? `Beat ${opponent?.name ?? "my opponent"} ${myScore}-${oppScore} in Reaction on ARENA ⚡ arenagameplay.app`
+    : `Lost to ${winnerName} ${oppScore}-${myScore} in Reaction on ARENA ⚡ arenagameplay.app`;
 
   const {
     cardRef, sharing, copyDone, downloadDone,

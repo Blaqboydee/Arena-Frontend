@@ -146,7 +146,7 @@ export default function GameShareCard({
             fontSize: 11, color: "#374151",
             letterSpacing: "0.1em", fontWeight: 700,
           }}>
-            ARENA ⚡ arenagameplay.vercel.app
+            ARENA ⚡ arenagameplay.app
           </span>
         </div>
       </div>

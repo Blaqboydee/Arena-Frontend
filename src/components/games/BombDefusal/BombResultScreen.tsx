@@ -23,10 +23,10 @@ export default function BombResultScreen({ result, me, onPlayAgain }: Props) {
   };
 
   const shareText = result.success
-    ? `Our team defused the bomb in ${formatTime(result.timeUsed)} with ${result.strikes} strike${result.strikes !== 1 ? "s" : ""} on ARENA 💣 arenagameplay.vercel.app`
+    ? `Our team defused the bomb in ${formatTime(result.timeUsed)} with ${result.strikes} strike${result.strikes !== 1 ? "s" : ""} on ARENA 💣 arenagameplay.app`
     : result.reason === "strikes"
-    ? `Our team hit ${result.strikes} strikes and the bomb exploded on ARENA 💥 arenagameplay.vercel.app`
-    : `Our team ran out of time — the bomb exploded on ARENA 💥 arenagameplay.vercel.app`;
+    ? `Our team hit ${result.strikes} strikes and the bomb exploded on ARENA 💥 arenagameplay.app`
+    : `Our team ran out of time — the bomb exploded on ARENA 💥 arenagameplay.app`;
 
   const {
     sharing, copyDone, downloadDone,

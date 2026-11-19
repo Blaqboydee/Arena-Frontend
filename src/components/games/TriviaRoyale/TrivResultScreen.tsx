@@ -20,8 +20,8 @@ export default function TrivResultScreen({ matchOver, myId }: Props) {
   const myScore = matchOver.scores[myId] ?? 0;
 
   const shareText = iWon
-    ? `I won Trivia Royale scoring ${myScore} pts across ${totalQuestions} questions on ARENA 🧠 arenagameplay.vercel.app`
-    : `I finished #${myRank} in Trivia Royale with ${myScore} pts on ARENA 🦠 arenagameplay.vercel.app`;
+    ? `I won Trivia Royale scoring ${myScore} pts across ${totalQuestions} questions on ARENA 🧠 arenagameplay.app`
+    : `I finished #${myRank} in Trivia Royale with ${myScore} pts on ARENA 🦠 arenagameplay.app`;
 
   const {
     sharing, copyDone, downloadDone,
