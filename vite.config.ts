@@ -7,6 +7,11 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // Retire the previously-shipped service worker: this emits a SW that
+      // unregisters the old one and clears its caches on every device. The app
+      // is network-required (multiplayer), so offline caching only caused stale
+      // builds. Installability is preserved via the manifest below.
+      selfDestroying: true,
       // Registered manually in main.tsx — web only, never inside the Capacitor app.
       injectRegister: false,
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
