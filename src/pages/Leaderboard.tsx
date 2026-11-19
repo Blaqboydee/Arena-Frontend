@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchLeaderboard, type LeaderboardPlayer } from "../lib/api";
 import { GAME_META, GAME_ORDER } from "../lib/games";
@@ -34,11 +34,12 @@ function TopBar({ onBack }: { onBack: () => void }) {
 }
 
 // ── Player row ────────────────────────────────────────────────────────────────
-function PlayerRow({ p, isMe, onClick }: { p: LeaderboardPlayer; isMe: boolean; onClick: () => void }) {
+function PlayerRow({ p, isMe, onClick, style }: { p: LeaderboardPlayer; isMe: boolean; onClick: () => void; style?: CSSProperties }) {
   const tier = tierForRating(p.rating);
   return (
     <button
       onClick={onClick}
+      style={style}
       className={`group flex items-center gap-3 sm:gap-4 w-full text-left rounded-sm px-3 sm:px-4 py-3 border transition-all duration-150 active:scale-[0.99]
         ${isMe ? "bg-amber/5 border-amber/40" : "bg-surface border-border hover:border-amber/30 hover:bg-elevated"}`}
     >
@@ -151,9 +152,15 @@ export default function Leaderboard() {
         ) : players.length === 0 ? (
           <EmptyState text="No matches here yet. Play a game and claim the top spot!" />
         ) : (
-          <div className="flex flex-col gap-1.5 slide-up-2">
-            {players.map((p) => (
-              <PlayerRow key={p.id} p={p} isMe={p.id === myId} onClick={() => navigate(`/profile/${p.id}`)} />
+          <div className="flex flex-col gap-1.5">
+            {players.map((p, i) => (
+              <PlayerRow
+                key={p.id}
+                p={p}
+                isMe={p.id === myId}
+                onClick={() => navigate(`/profile/${p.id}`)}
+                style={{ animation: "slide-up 0.4s ease both", animationDelay: `${Math.min(i, 15) * 35}ms` }}
+              />
             ))}
           </div>
         )}

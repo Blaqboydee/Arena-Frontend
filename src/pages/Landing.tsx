@@ -6,6 +6,7 @@ import Button from "../components/ui/Button";
 import Avatar from "../components/ui/Avatar";
 import ColorPicker from "../components/ui/ColorPicker";
 import AvatarPicker from "../components/ui/AvatarPicker";
+import LeaderboardTeaser from "../components/LeaderboardTeaser";
 import Badge from "../components/ui/Badge";
 
 // ── Decorative background grid lines ─────────────────────────────────────────
@@ -430,6 +431,9 @@ export default function Landing() {
 
         {/* ── Games strip – live ticker ── */}
         <GamesStrip />
+
+        {/* ── Live leaderboard teaser ── */}
+        <LeaderboardTeaser />
       </main>
 
       {/* ── Footer ── */}
