@@ -5,6 +5,7 @@ import { useSession } from "../hooks/useSession";
 import Button from "../components/ui/Button";
 import Avatar from "../components/ui/Avatar";
 import ColorPicker from "../components/ui/ColorPicker";
+import AvatarPicker from "../components/ui/AvatarPicker";
 import Badge from "../components/ui/Badge";
 
 // ── Decorative background grid lines ─────────────────────────────────────────
@@ -313,6 +314,7 @@ export default function Landing() {
 
   const [name, setName] = useState("");
   const [color, setColor] = useState<AvatarColor>("amber");
+  const [avatar, setAvatar] = useState("");
   const [error, setError] = useState("");
 
   function handleEnter() {
@@ -325,7 +327,7 @@ export default function Landing() {
       setError("Name must be at least 2 characters.");
       return;
     }
-    setSession({ name: trimmed, avatarColor: color });
+    setSession({ name: trimmed, avatarColor: color, avatar });
     navigate("/lobby");
   }
 
@@ -375,7 +377,7 @@ export default function Landing() {
 
           {/* Avatar preview + name input */}
           <div className="flex items-center gap-4">
-            <Avatar name={name || "?"} color={color} size="xl" />
+            <Avatar name={name || "?"} color={color} seed={avatar} size="xl" />
 
             <div className="flex-1 flex flex-col gap-1">
               <input
@@ -396,6 +398,14 @@ export default function Landing() {
                 <p className="text-[11px] text-red font-mono">{error}</p>
               )}
             </div>
+          </div>
+
+          {/* Avatar picker */}
+          <div className="flex flex-col gap-2">
+            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+              Choose avatar
+            </span>
+            <AvatarPicker value={avatar} onChange={setAvatar} color={color} />
           </div>
 
           {/* Color picker */}

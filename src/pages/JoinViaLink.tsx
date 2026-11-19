@@ -72,7 +72,7 @@ export default function JoinViaLink() {
 
     // Connect immediately — timeout:65s handles cold Render starts.
     if (!socket.connected) socket.connect();
-    socket.emit("set_session", { name, avatarColor });
+    socket.emit("set_session", { name, avatarColor, avatar: session?.avatar ?? "" });
     socket.emit("join_room", { inviteCode: code.toUpperCase() });
 
     return () => {

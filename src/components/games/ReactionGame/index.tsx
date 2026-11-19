@@ -48,7 +48,7 @@ export default function ReactionGame({ roomId, myId, players }: Props) {
         <div className="flex items-center gap-3">
           <Avatar
             name={me?.name ?? "You"}
-            color={me?.avatarColor ?? "amber"}
+            color={me?.avatarColor ?? "amber"} seed={me?.avatar}
             size="md"
           />
           <div className="flex flex-col">
@@ -71,7 +71,7 @@ export default function ReactionGame({ roomId, myId, players }: Props) {
         <div className="flex items-center gap-3 flex-row-reverse">
           <Avatar
             name={opponent?.name ?? "?"}
-            color={opponent?.avatarColor ?? "cyan"}
+            color={opponent?.avatarColor ?? "cyan"} seed={opponent?.avatar}
             size="md"
           />
           <div className="flex flex-col items-end">

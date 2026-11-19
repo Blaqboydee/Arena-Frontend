@@ -481,7 +481,7 @@ export default function Hangman({ roomId, myId, players }: Props) {
       {/* ── Scoreboard ── */}
       <div className="w-full bg-surface border border-border rounded-sm px-5 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <Avatar name={me?.name ?? "You"} color={me?.avatarColor ?? "amber"} size="sm" />
+          <Avatar name={me?.name ?? "You"} color={me?.avatarColor ?? "amber"} seed={me?.avatar} size="sm" />
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="font-mono text-[10px] text-muted">{me?.name ?? "You"}</span>
@@ -501,7 +501,7 @@ export default function Hangman({ roomId, myId, players }: Props) {
         </div>
 
         <div className="flex items-center gap-2.5 flex-row-reverse">
-          <Avatar name={opponent?.name ?? "?"} color={opponent?.avatarColor ?? "cyan"} size="sm" />
+          <Avatar name={opponent?.name ?? "?"} color={opponent?.avatarColor ?? "cyan"} seed={opponent?.avatar} size="sm" />
           <div className="flex flex-col items-end">
             <div className="flex items-center gap-1.5">
               <span className="font-mono text-[8px] bg-elevated text-muted border border-border rounded px-1 tracking-widest uppercase">

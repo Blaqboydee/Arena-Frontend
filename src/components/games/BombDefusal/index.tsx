@@ -417,7 +417,7 @@ export default function BombDefusal({ roomId, myId, players }: Props) {
                 : "border-border bg-surface"
             }`}
           >
-            <Avatar name={p.name} color={p.avatarColor} size="sm" />
+            <Avatar name={p.name} color={p.avatarColor} seed={p.avatar} size="sm" />
             <span className="font-mono text-muted">{p.name}</span>
             {p.id === g.defuserId && (
               <span className="text-red font-mono text-[10px]">DEF</span>

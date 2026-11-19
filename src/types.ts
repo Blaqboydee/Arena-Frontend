@@ -7,6 +7,7 @@ export type Player = {
   id: string;
   name: string;
   avatarColor: AvatarColor;
+  avatar?: string; // boring-avatars seed; empty = seed off name
 };
 
 // ── Room / Lobby ──────────────────────────────────────────────────────────────

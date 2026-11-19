@@ -105,7 +105,7 @@ function GameBar({ gameType, players, myId }: { gameType: GameType; players: Pla
         <div className="flex items-center gap-3">
           {me && (
             <div className="flex items-center gap-1.5">
-              <Avatar name={me.name} color={me.avatarColor} size="sm" />
+              <Avatar name={me.name} color={me.avatarColor} seed={me.avatar} size="sm" />
               <span className="font-mono text-xs text-muted">{me.name}</span>
             </div>
           )}
@@ -113,7 +113,7 @@ function GameBar({ gameType, players, myId }: { gameType: GameType; players: Pla
             <>
               <span className="font-mono text-xs text-dim">vs</span>
               <div className="flex items-center gap-1.5">
-                <Avatar name={others[0].name} color={others[0].avatarColor} size="sm" />
+                <Avatar name={others[0].name} color={others[0].avatarColor} seed={others[0].avatar} size="sm" />
                 <span className="font-mono text-xs text-muted">{others[0].name}</span>
               </div>
             </>
@@ -158,6 +158,7 @@ export default function Game() {
       socket.emit("set_session", {
         name:        session.name,
         avatarColor: session.avatarColor,
+        avatar:      session.avatar ?? "",
       });
     }
   }, [session]);

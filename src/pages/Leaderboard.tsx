@@ -44,7 +44,7 @@ function PlayerRow({ p, isMe, onClick }: { p: LeaderboardPlayer; isMe: boolean; 
         {p.rank}
       </div>
 
-      <Avatar name={p.displayName} color={p.avatarColor} size="md" />
+      <Avatar name={p.displayName} color={p.avatarColor} seed={p.avatar} size="md" />
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">

@@ -75,7 +75,7 @@ export default function ResultScreen({ result, players, myId, scores }: Props) {
             <div className="flex flex-col items-center gap-2">
               <Avatar
                 name={me?.name ?? "You"}
-                color={me?.avatarColor ?? "amber"}
+                color={me?.avatarColor ?? "amber"} seed={me?.avatar}
                 size="lg"
               />
               <span className="font-mono text-xs text-muted">
@@ -101,7 +101,7 @@ export default function ResultScreen({ result, players, myId, scores }: Props) {
             <div className="flex flex-col items-center gap-2">
               <Avatar
                 name={opponent?.name ?? "?"}
-                color={opponent?.avatarColor ?? "cyan"}
+                color={opponent?.avatarColor ?? "cyan"} seed={opponent?.avatar}
                 size="lg"
               />
               <span className="font-mono text-xs text-muted">

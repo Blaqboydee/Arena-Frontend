@@ -79,7 +79,7 @@ export default function TttResultScreen({ matchOver, players, myId }: Props) {
         <div className="bracket-card w-full bg-surface border border-border rounded-sm p-6 flex flex-col gap-5">
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-center gap-2">
-              <Avatar name={me?.name ?? "You"} color={me?.avatarColor ?? "amber"} size="lg" />
+              <Avatar name={me?.name ?? "You"} color={me?.avatarColor ?? "amber"} seed={me?.avatar} size="lg" />
               <span className="font-mono text-xs text-muted">
                 {me?.name ?? "You"}
                 <span className="ml-1.5 text-[9px] bg-amber/10 text-amber border border-amber/30 rounded px-1 py-0.5 tracking-widest uppercase">
@@ -99,7 +99,7 @@ export default function TttResultScreen({ matchOver, players, myId }: Props) {
             </div>
 
             <div className="flex flex-col items-center gap-2">
-              <Avatar name={opponent?.name ?? "?"} color={opponent?.avatarColor ?? "cyan"} size="lg" />
+              <Avatar name={opponent?.name ?? "?"} color={opponent?.avatarColor ?? "cyan"} seed={opponent?.avatar} size="lg" />
               <span className="font-mono text-xs text-muted">
                 {opponent?.name ?? "Opponent"}
               </span>

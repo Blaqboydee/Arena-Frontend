@@ -84,7 +84,7 @@ export default function BombResultScreen({ result, me, onPlayAgain }: Props) {
                 p.id === me.id ? "border-amber/30 bg-amber/5" : "border-border bg-bg"
               }`}
             >
-              <Avatar name={p.name} color={p.avatarColor} size="sm" />
+              <Avatar name={p.name} color={p.avatarColor} seed={p.avatar} size="sm" />
               <span className="font-mono text-xs text-muted">{p.name}</span>
             </div>
           ))}

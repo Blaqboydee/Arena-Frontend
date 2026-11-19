@@ -104,7 +104,7 @@ export function CreatedRoomModal({ inviteCode, gameLabel, onCancel, roomUpdate, 
             <div className="flex flex-col gap-2">
               {roomUpdate.players.map((p) => (
                 <div key={p.id} className="flex items-center gap-2 px-3 py-2 rounded-sm border border-border bg-bg">
-                  <Avatar name={p.name} color={p.avatarColor} size="sm" />
+                  <Avatar name={p.name} color={p.avatarColor} seed={p.avatar} size="sm" />
                   <span className="font-mono text-xs text-muted">{p.name}</span>
                 </div>
               ))}

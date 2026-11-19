@@ -86,6 +86,7 @@ export function useLobby() {
     socket.emit("set_session", {
       name:        session.name,
       avatarColor: session.avatarColor,
+      avatar:      session.avatar ?? "",
     });
     socket.emit("join_lobby");
 

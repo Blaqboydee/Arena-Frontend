@@ -93,7 +93,7 @@ export default function Profile() {
           <>
             {/* Header */}
             <div className="flex items-center gap-4 slide-up-1">
-              <Avatar name={data.user.displayName} color={data.user.avatarColor} size="xl" />
+              <Avatar name={data.user.displayName} color={data.user.avatarColor} seed={data.user.avatar} size="xl" />
               <div className="flex flex-col gap-1.5 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="font-display font-800 text-3xl sm:text-4xl tracking-wide leading-none truncate">{data.user.displayName}</h1>

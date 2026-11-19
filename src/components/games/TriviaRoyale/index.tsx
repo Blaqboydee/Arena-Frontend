@@ -92,7 +92,7 @@ function Leaderboard({ entries, myId }: { entries: TrivLeaderboardEntry[]; myId:
           }`}>
             {i + 1}
           </span>
-          <Avatar name={entry.name} color={entry.avatarColor} size="sm" />
+          <Avatar name={entry.name} color={entry.avatarColor} seed={entry.avatar} size="sm" />
           <span className="font-mono text-xs text-muted flex-1 truncate">
             {entry.name}
             {entry.id === myId && (

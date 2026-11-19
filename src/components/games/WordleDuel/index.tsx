@@ -162,7 +162,7 @@ export default function WordleDuel({ roomId, myId, players }: Props) {
       {/* ── Scoreboard ── */}
       <div className="w-full bg-surface border border-border rounded-sm px-5 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <Avatar name={me?.name ?? "You"} color={me?.avatarColor ?? "amber"} size="sm" />
+          <Avatar name={me?.name ?? "You"} color={me?.avatarColor ?? "amber"} seed={me?.avatar} size="sm" />
           <div className="flex flex-col">
             <span className="font-mono text-[10px] text-muted">{me?.name ?? "You"}</span>
             <span className="font-display text-4xl text-text leading-none">{myScore}</span>
@@ -177,7 +177,7 @@ export default function WordleDuel({ roomId, myId, players }: Props) {
         </div>
 
         <div className="flex items-center gap-2.5 flex-row-reverse">
-          <Avatar name={opponent?.name ?? "?"} color={opponent?.avatarColor ?? "cyan"} size="sm" />
+          <Avatar name={opponent?.name ?? "?"} color={opponent?.avatarColor ?? "cyan"} seed={opponent?.avatar} size="sm" />
           <div className="flex flex-col items-end">
             <span className="font-mono text-[10px] text-muted">{opponent?.name ?? "Opponent"}</span>
             <span className="font-display text-4xl text-text leading-none">{oppScore}</span>

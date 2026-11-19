@@ -4,6 +4,7 @@ import type { AvatarColor } from "../types";
 export type Session = {
   name: string;
   avatarColor: AvatarColor;
+  avatar?: string; // boring-avatars seed
 };
 
 const SESSION_KEY = "arena_session";

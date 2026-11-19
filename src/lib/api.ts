@@ -8,6 +8,7 @@ export type LeaderboardPlayer = {
   id: string;
   displayName: string;
   avatarColor: AvatarColor;
+  avatar: string;
   wins: number;
   losses: number;
   draws: number;
@@ -39,6 +40,7 @@ export type Profile = {
     id: string;
     displayName: string;
     avatarColor: AvatarColor;
+    avatar: string;
     wins: number;
     losses: number;
     draws: number;

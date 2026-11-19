@@ -1,55 +1,51 @@
+import BoringAvatar from "boring-avatars";
 import type { AvatarColor } from "../../types";
+import { avatarPalette } from "../../lib/avatar";
 
 type Size = "sm" | "md" | "lg" | "xl";
 
 type Props = {
   name: string;
   color: AvatarColor;
+  /** boring-avatars seed; falls back to `name` when empty. */
+  seed?: string;
   size?: Size;
   className?: string;
 };
 
-const colorMap: Record<AvatarColor, { bg: string; text: string; ring: string }> = {
-  amber:   { bg: "bg-amber/20",   text: "text-amber",   ring: "ring-amber/40"   },
-  cyan:    { bg: "bg-cyan-400/20",  text: "text-cyan-400",  ring: "ring-cyan-400/40"  },
-  rose:    { bg: "bg-rose-400/20",  text: "text-rose-400",  ring: "ring-rose-400/40"  },
-  violet:  { bg: "bg-violet-400/20",text: "text-violet-400",ring: "ring-violet-400/40"},
-  emerald: { bg: "bg-emerald-400/20",text:"text-emerald-400",ring:"ring-emerald-400/40"},
-  sky:     { bg: "bg-sky-400/20",   text: "text-sky-400",   ring: "ring-sky-400/40"   },
+// Ring accent per color (keeps the player's color identity around the avatar).
+const ringMap: Record<AvatarColor, string> = {
+  amber:   "ring-amber/40",
+  cyan:    "ring-cyan-400/40",
+  rose:    "ring-rose-400/40",
+  violet:  "ring-violet-400/40",
+  emerald: "ring-emerald-400/40",
+  sky:     "ring-sky-400/40",
 };
 
-const sizeMap: Record<Size, { wrapper: string; text: string }> = {
-  sm: { wrapper: "w-7 h-7 text-xs",  text: "" },
-  md: { wrapper: "w-9 h-9 text-sm",  text: "" },
-  lg: { wrapper: "w-12 h-12 text-base", text: "" },
-  xl: { wrapper: "w-16 h-16 text-xl",   text: "" },
+const sizeMap: Record<Size, { wrapper: string; px: number }> = {
+  sm: { wrapper: "w-7 h-7",   px: 28 },
+  md: { wrapper: "w-9 h-9",   px: 36 },
+  lg: { wrapper: "w-12 h-12", px: 48 },
+  xl: { wrapper: "w-16 h-16", px: 64 },
 };
 
-function initials(name: string): string {
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
-
-export default function Avatar({ name, color, size = "md", className = "" }: Props) {
-  const c = colorMap[color];
+export default function Avatar({ name, color, seed, size = "md", className = "" }: Props) {
   const s = sizeMap[size];
+  const avatarSeed = seed && seed.length ? seed : name || "arena";
+  const palette = avatarPalette(color);
 
   return (
     <div
-      className={`
-        ${s.wrapper} ${c.bg} ${c.text}
-        flex items-center justify-center
-        rounded-sm font-display font-bold
-        ring-1 ${c.ring}
-        select-none shrink-0
-        ${className}
-      `}
+      className={`${s.wrapper} rounded-sm ring-1 ${ringMap[color]} overflow-hidden shrink-0 bg-elevated select-none ${className}`}
     >
-      {initials(name)}
+      <BoringAvatar
+        size={s.px}
+        name={avatarSeed}
+        variant="beam"
+        colors={palette}
+        square
+      />
     </div>
   );
 }

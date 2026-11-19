@@ -31,11 +31,13 @@ function GridLines() {
 function TopBar({
   name,
   avatarColor,
+  avatar,
   onJoinRoom,
   onLeave,
 }: {
   name: string;
   avatarColor: AvatarColor;
+  avatar: string;
   onJoinRoom: () => void;
   onLeave: () => void;
 }) {
@@ -107,7 +109,7 @@ function TopBar({
             title="Your profile"
             className="flex items-center gap-2 min-w-0 hover:opacity-80 active:scale-95 transition-all duration-150"
           >
-            <Avatar name={name} color={avatarColor} size="sm" />
+            <Avatar name={name} color={avatarColor} seed={avatar} size="sm" />
             {/* Name — hidden on small screens to save space */}
             <span className="font-mono text-xs text-muted truncate hidden sm:block max-w-[120px]">
               {name}
@@ -181,6 +183,7 @@ export default function Lobby() {
       <TopBar
         name={session.name}
         avatarColor={session.avatarColor}
+        avatar={session.avatar ?? ""}
         onJoinRoom={openJoinDialog}
         onLeave={() => navigate("/")}
       />
