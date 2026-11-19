@@ -1,5 +1,7 @@
 import { Trophy, Skull, Handshake } from "lucide-react";
-import type { Player } from "../../types";
+import BoringAvatar from "boring-avatars";
+import type { Player, AvatarColor } from "../../types";
+import { avatarPalette } from "../../lib/avatar";
 
 type Props = {
   gameLabel:   string;
@@ -13,33 +15,10 @@ type Props = {
   cardRef:     React.RefObject<HTMLDivElement | null>;
 };
 
-function CardAvatar({ name, color }: { name: string; color: string }) {
-  const initials = name.slice(0, 2).toUpperCase();
-
-  const palettes: Record<string, { bg: string; text: string; border: string }> = {
-    amber: { bg: "#451a03",   text: "#fbbf24", border: "#92400e" },
-    cyan:  { bg: "#083344",   text: "#22d3ee", border: "#0e7490" },
-    green: { bg: "#052e16",   text: "#4ade80", border: "#166534" },
-    red:   { bg: "#450a0a",   text: "#f87171", border: "#991b1b" },
-    blue:  { bg: "#172554",   text: "#60a5fa", border: "#1e40af" },
-    rose:    { bg: "#4c0519", text: "#fb7185", border: "#9f1239" },
-    violet:  { bg: "#2e1065", text: "#a78bfa", border: "#5b21b6" },
-    emerald: { bg: "#052e16", text: "#34d399", border: "#065f46" },
-    sky:     { bg: "#082f49", text: "#38bdf8", border: "#0369a1" },
-  };
-
-  const p = palettes[color] ?? palettes.amber;
-
+function CardAvatar({ seed, name, color }: { seed?: string; name: string; color: string }) {
   return (
-    <div style={{
-      width: 56, height: 56, borderRadius: "50%",
-      background: p.bg, border: `1.5px solid ${p.border}`,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      fontFamily: "'Courier New', monospace",
-      fontSize: 18, fontWeight: 700, color: p.text,
-      letterSpacing: "0.05em", flexShrink: 0,
-    }}>
-      {initials}
+    <div style={{ width: 56, height: 56, borderRadius: 10, overflow: "hidden", flexShrink: 0, border: "1.5px solid #2e2e35" }}>
+      <BoringAvatar size={56} name={seed || name || "arena"} variant="beam" colors={avatarPalette(color as AvatarColor)} square />
     </div>
   );
 }
@@ -126,7 +105,7 @@ export default function GameShareCard({
           border: "1px solid #1f1f1f",
         }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-            <CardAvatar name={me?.name ?? "You"} color={me?.avatarColor ?? "amber"} />
+            <CardAvatar seed={me?.avatar} name={me?.name ?? "You"} color={me?.avatarColor ?? "amber"} />
             <span style={{ fontSize: 11, color: "#9ca3af", letterSpacing: "0.05em" }}>
               {me?.name ?? "You"}
             </span>
@@ -149,7 +128,7 @@ export default function GameShareCard({
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-            <CardAvatar name={opponent?.name ?? "?"} color={opponent?.avatarColor ?? "cyan"} />
+            <CardAvatar seed={opponent?.avatar} name={opponent?.name ?? "?"} color={opponent?.avatarColor ?? "cyan"} />
             <span style={{ fontSize: 11, color: "#9ca3af", letterSpacing: "0.05em" }}>
               {opponent?.name ?? "Opponent"}
             </span>
