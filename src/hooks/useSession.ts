@@ -11,7 +11,8 @@ const SESSION_KEY = "arena_session";
 
 function load(): Session | null {
   try {
-    const raw = sessionStorage.getItem(SESSION_KEY);
+    // localStorage so a returning player keeps their profile across tabs/visits.
+    const raw = localStorage.getItem(SESSION_KEY);
     return raw ? (JSON.parse(raw) as Session) : null;
   } catch {
     return null;
@@ -19,7 +20,7 @@ function load(): Session | null {
 }
 
 function save(s: Session) {
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(s));
+  try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch { /* storage blocked */ }
 }
 
 export function useSession() {
@@ -31,7 +32,7 @@ export function useSession() {
   }
 
   function clearSession() {
-    sessionStorage.removeItem(SESSION_KEY);
+    try { localStorage.removeItem(SESSION_KEY); } catch { /* storage blocked */ }
     setSessionState(null);
   }
 

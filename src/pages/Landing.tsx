@@ -310,13 +310,14 @@ function GamesStrip() {
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function Landing() {
   const navigate = useNavigate();
-  const { setSession } = useSession();
+  const { session, setSession } = useSession();
 
-  const [name, setName] = useState("");
-  const [avatar, setAvatar] = useState("");
+  const [name, setName] = useState(session?.name ?? "");
+  const [avatar, setAvatar] = useState(session?.avatar ?? "");
   const [error, setError] = useState("");
   // Accent color is derived from the chosen avatar (no separate color picker).
   const color = colorFromSeed(avatar || name || "arena");
+  const returning = Boolean(session);
 
   function handleEnter() {
     const trimmed = name.trim();
@@ -373,7 +374,7 @@ export default function Landing() {
 
           {/* Section label */}
           <div className="rule-label">
-            <span>Identify yourself</span>
+            <span>{returning ? "Welcome back" : "Identify yourself"}</span>
           </div>
 
           {/* Avatar preview + name input */}
@@ -417,7 +418,7 @@ export default function Landing() {
             onClick={handleEnter}
             className="mt-2 amber-pulse"
           >
-            Enter Arena →
+            {returning ? "Continue →" : "Enter Arena →"}
           </Button>
         </div>
 
