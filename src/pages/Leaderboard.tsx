@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchLeaderboard, type LeaderboardPlayer } from "../lib/api";
 import { GAME_META, GAME_ORDER } from "../lib/games";
 import { getUserId } from "../socket";
+import { tierForRating } from "../lib/tiers";
 import type { GameType } from "../types";
 import Avatar from "../components/ui/Avatar";
 
@@ -34,6 +35,7 @@ function TopBar({ onBack }: { onBack: () => void }) {
 
 // ── Player row ────────────────────────────────────────────────────────────────
 function PlayerRow({ p, isMe, onClick }: { p: LeaderboardPlayer; isMe: boolean; onClick: () => void }) {
+  const tier = tierForRating(p.rating);
   return (
     <button
       onClick={onClick}
@@ -53,15 +55,16 @@ function PlayerRow({ p, isMe, onClick }: { p: LeaderboardPlayer; isMe: boolean; 
             <span className="font-mono text-[8px] text-amber border border-amber/40 rounded-sm px-1 py-0.5 tracking-widest shrink-0">YOU</span>
           )}
         </div>
-        <div className="font-mono text-[11px] text-muted">
-          {p.gamesPlayed} {p.gamesPlayed === 1 ? "game" : "games"} · {p.winRate}% WR
+        <div className="flex items-center gap-1.5 font-mono text-[11px]">
+          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: tier.color }} />
+          <span style={{ color: tier.color }}>{tier.name}</span>
+          <span className="text-dim truncate">· {p.winRate}% · {p.wins}-{p.losses}</span>
         </div>
       </div>
 
-      <div className="flex items-center gap-2.5 sm:gap-4 shrink-0 font-mono text-sm tabular-nums">
-        <span className="text-green">{p.wins}<span className="text-dim text-[9px] ml-0.5">W</span></span>
-        <span className="text-red">{p.losses}<span className="text-dim text-[9px] ml-0.5">L</span></span>
-        <span className="text-muted hidden sm:inline">{p.draws}<span className="text-dim text-[9px] ml-0.5">D</span></span>
+      <div className="flex flex-col items-end shrink-0">
+        <span className="font-display text-xl font-bold tabular-nums text-amber leading-none">{p.rating}</span>
+        <span className="font-mono text-[8px] text-dim tracking-widest mt-0.5">ELO</span>
       </div>
     </button>
   );

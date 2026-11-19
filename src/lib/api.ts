@@ -9,6 +9,7 @@ export type LeaderboardPlayer = {
   displayName: string;
   avatarColor: AvatarColor;
   avatar: string;
+  rating: number;
   wins: number;
   losses: number;
   draws: number;
@@ -31,6 +32,7 @@ export type RecentMatch = {
   gameType: GameType;
   result: MatchResult;
   score: number;
+  ratingDelta: number | null;
   status: "completed" | "abandoned";
   endedAt: string;
 };
@@ -41,6 +43,7 @@ export type Profile = {
     displayName: string;
     avatarColor: AvatarColor;
     avatar: string;
+    rating: number;
     wins: number;
     losses: number;
     draws: number;

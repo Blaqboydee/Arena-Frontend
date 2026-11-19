@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchProfile, type Profile as ProfileData, type MatchResult } from "../lib/api";
 import { GAME_META, timeAgo } from "../lib/games";
+import { tierForRating } from "../lib/tiers";
 import { getUserId } from "../socket";
 import Avatar from "../components/ui/Avatar";
 
@@ -99,6 +100,12 @@ export default function Profile() {
                   <h1 className="font-display font-800 text-3xl sm:text-4xl tracking-wide leading-none truncate">{data.user.displayName}</h1>
                   {isMe && <span className="font-mono text-[8px] text-amber border border-amber/40 rounded-sm px-1 py-0.5 tracking-widest">YOU</span>}
                 </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-[11px] font-bold tracking-widest uppercase" style={{ color: tierForRating(data.user.rating).color }}>
+                    {tierForRating(data.user.rating).name}
+                  </span>
+                  <span className="font-display text-base text-amber tabular-nums leading-none">{data.user.rating}<span className="text-[9px] text-dim ml-1 tracking-widest">ELO</span></span>
+                </div>
                 <span className="font-mono text-[11px] text-dim tracking-widest uppercase">
                   {data.user.isGuest ? "Guest" : "Member"} · joined {timeAgo(data.user.createdAt)}
                 </span>
@@ -155,6 +162,11 @@ export default function Profile() {
                         <span className="text-base shrink-0">{GAME_META[m.gameType]?.icon ?? "🎮"}</span>
                         <span className="font-display text-sm flex-1 truncate">{GAME_META[m.gameType]?.label ?? m.gameType}</span>
                         <span className="font-mono text-[10px] text-dim hidden sm:block">{timeAgo(m.endedAt)}</span>
+                        {m.ratingDelta != null && m.ratingDelta !== 0 && (
+                          <span className={`font-mono text-[10px] tabular-nums shrink-0 ${m.ratingDelta > 0 ? "text-green" : "text-red"}`}>
+                            {m.ratingDelta > 0 ? "+" : ""}{m.ratingDelta}
+                          </span>
+                        )}
                         <span className={`font-mono text-[9px] tracking-widest border rounded-sm px-1.5 py-0.5 shrink-0 ${rs.cls}`}>{rs.label}</span>
                       </div>
                     );
