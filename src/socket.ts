@@ -13,6 +13,25 @@ import { io, Socket } from "socket.io-client";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
+// ── Persistent guest identity ─────────────────────────────────────────────────
+// A durable token (localStorage — survives reloads on the same device) lets the
+// server resolve the same User row on every connect. The server mints one on
+// first connect and pushes it back via the "identity" event, persisted below.
+// This is additive and does NOT touch any of the locked transport/reconnection
+// values above — it only adds a handshake `auth` payload.
+const GUEST_TOKEN_KEY = "arena_guest_token";
+
+export function getGuestToken(): string | null {
+  try { return localStorage.getItem(GUEST_TOKEN_KEY); } catch { return null; }
+}
+
+function setGuestToken(token: string): void {
+  try { localStorage.setItem(GUEST_TOKEN_KEY, token); } catch { /* storage blocked */ }
+}
+
+let _userId: string | null = null;
+export function getUserId(): string | null { return _userId; }
+
 const socket: Socket = io(BACKEND_URL, {
   autoConnect: false,
   withCredentials: true,
@@ -21,6 +40,15 @@ const socket: Socket = io(BACKEND_URL, {
   reconnectionAttempts: 10,
   reconnectionDelay: 1000,
   timeout: 65000,   // 65 s > Render free-tier cold-start (~55 s)
+  // Sent on every (re)connect; function form re-reads the latest stored token.
+  auth: (cb) => cb({ token: getGuestToken() ?? undefined }),
+});
+
+// Server pushes the durable identity right after connect — persist it so the
+// next connection (even after a reload) re-uses the same guest User.
+socket.on("identity", (data: { userId?: string; token?: string }) => {
+  if (data?.token)  setGuestToken(data.token);
+  if (data?.userId) _userId = data.userId;
 });
 
 // ── Server wake-up machinery ──────────────────────────────────────────────────
