@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "../hooks/useSession";
+import type { AvatarColor } from "../types";
+import AccountModal from "../components/AccountModal";
 import Button from "../components/ui/Button";
 import Avatar from "../components/ui/Avatar";
 import AvatarPicker from "../components/ui/AvatarPicker";
@@ -315,6 +317,7 @@ export default function Landing() {
   const [name, setName] = useState(session?.name ?? "");
   const [avatar, setAvatar] = useState(session?.avatar ?? "");
   const [error, setError] = useState("");
+  const [showRestore, setShowRestore] = useState(false);
   // Accent color is derived from the chosen avatar (no separate color picker).
   const color = colorFromSeed(avatar || name || "arena");
   const returning = Boolean(session);
@@ -420,6 +423,14 @@ export default function Landing() {
           >
             {returning ? "Continue →" : "Enter Arena →"}
           </Button>
+
+          {/* Restore a saved account (returning on a new device / after a wipe) */}
+          <button
+            onClick={() => setShowRestore(true)}
+            className="font-mono text-[11px] text-dim hover:text-amber transition-colors -mt-1 self-center"
+          >
+            Have an account? <span className="underline underline-offset-2">Restore it</span>
+          </button>
         </div>
 
         {/* ── Games strip – live ticker (hidden on phones to fit the fold) ── */}
@@ -451,6 +462,22 @@ export default function Landing() {
           <span className="font-mono text-[10px] text-dim group-hover:text-amber transition-colors duration-150">★</span>
         </a>
       </footer>
+
+      {showRestore && (
+        <AccountModal
+          mode="restore"
+          onClose={() => setShowRestore(false)}
+          onRestored={(identity) => {
+            // Adopt the recovered profile and head straight into the lobby.
+            setSession({
+              name:        identity.name,
+              avatarColor: identity.avatarColor as AvatarColor,
+              avatar:      identity.avatar,
+            });
+            navigate("/lobby");
+          }}
+        />
+      )}
     </div>
   );
 }

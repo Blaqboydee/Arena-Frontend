@@ -3,8 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { fetchProfile, type Profile as ProfileData, type MatchResult } from "../lib/api";
 import { GAME_META, timeAgo } from "../lib/games";
 import { tierForRating } from "../lib/tiers";
-import { getUserId } from "../socket";
+import { getUserId, getAccount, onAccountChange } from "../socket";
 import Avatar from "../components/ui/Avatar";
+import AccountModal from "../components/AccountModal";
 
 const RESULT_STYLE: Record<MatchResult, { label: string; cls: string }> = {
   win:     { label: "WON",      cls: "text-green border-green/40 bg-green/10" },
@@ -62,6 +63,11 @@ export default function Profile() {
   const [notFound, setNotFound] = useState(false);
   const isMe = id === getUserId();
 
+  // Claim state (from the socket identity event, persisted in localStorage).
+  const [account, setAccount] = useState(getAccount());
+  const [showClaim, setShowClaim] = useState(false);
+  useEffect(() => onAccountChange(() => setAccount(getAccount())), []);
+
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
@@ -111,6 +117,37 @@ export default function Profile() {
                 </span>
               </div>
             </div>
+
+            {/* Claim your account — only on your own, still-a-guest profile */}
+            {isMe && !account.claimed && (
+              <button
+                onClick={() => setShowClaim(true)}
+                className="group flex items-center gap-3 w-full text-left bg-amber/10 border border-amber/40
+                           rounded-sm px-4 py-3 hover:bg-amber/15 active:scale-[0.99] transition-all slide-up-2"
+              >
+                <span className="text-xl shrink-0">🔒</span>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="font-display text-sm text-amber tracking-wide">Save your account</span>
+                  <span className="font-mono text-[10px] text-muted leading-relaxed">
+                    You're a guest — claim a username so your rank and stats survive clearing your
+                    browser or switching devices.
+                  </span>
+                </div>
+                <span className="font-mono text-[10px] text-amber uppercase tracking-widest shrink-0">Claim →</span>
+              </button>
+            )}
+
+            {/* Saved confirmation */}
+            {isMe && account.claimed && (
+              <div className="flex items-center gap-2 bg-green/5 border border-green/30 rounded-sm px-4 py-2.5 slide-up-2">
+                <span className="text-green shrink-0">✓</span>
+                <span className="font-mono text-[11px] text-muted">
+                  Account saved
+                  {account.username && <> as <span className="text-text">@{account.username}</span></>}
+                  {" "}— log in from any device.
+                </span>
+              </div>
+            )}
 
             {/* Lifetime stat tiles */}
             <div className="grid grid-cols-4 gap-2 slide-up-2">
@@ -177,6 +214,8 @@ export default function Profile() {
           </>
         )}
       </main>
+
+      {showClaim && <AccountModal mode="claim" onClose={() => setShowClaim(false)} />}
     </div>
   );
 }

@@ -33,6 +33,36 @@ const USER_ID_KEY = "arena_user_id";
 let _userId: string | null = (() => { try { return localStorage.getItem(USER_ID_KEY); } catch { return null; } })();
 export function getUserId(): string | null { return _userId; }
 
+// ── Claim status (is this device a saved account, and under what handle) ───────
+// Persisted so the UI can render the right state before the socket reconnects.
+const CLAIMED_KEY  = "arena_claimed";
+const USERNAME_KEY = "arena_username";
+
+export type AccountInfo = { claimed: boolean; username: string | null };
+
+let _account: AccountInfo = {
+  claimed:  (() => { try { return localStorage.getItem(CLAIMED_KEY) === "1"; } catch { return false; } })(),
+  username: (() => { try { return localStorage.getItem(USERNAME_KEY); } catch { return null; } })(),
+};
+
+export function getAccount(): AccountInfo { return _account; }
+
+const _accountListeners = new Set<() => void>();
+export function onAccountChange(cb: () => void): () => void {
+  _accountListeners.add(cb);
+  return () => _accountListeners.delete(cb);
+}
+
+function setAccount(next: AccountInfo) {
+  _account = next;
+  try {
+    localStorage.setItem(CLAIMED_KEY, next.claimed ? "1" : "0");
+    if (next.username) localStorage.setItem(USERNAME_KEY, next.username);
+    else localStorage.removeItem(USERNAME_KEY);
+  } catch { /* storage blocked */ }
+  _accountListeners.forEach((fn) => fn());
+}
+
 const socket: Socket = io(BACKEND_URL, {
   autoConnect: false,
   withCredentials: true,
@@ -46,14 +76,58 @@ const socket: Socket = io(BACKEND_URL, {
 });
 
 // Server pushes the durable identity right after connect — persist it so the
-// next connection (even after a reload) re-uses the same guest User.
-socket.on("identity", (data: { userId?: string; token?: string }) => {
+// next connection (even after a reload) re-uses the same guest User. Also
+// carries claim status (claimed / username), re-sent after claim or restore.
+socket.on("identity", (data: {
+  userId?: string; token?: string; claimed?: boolean; username?: string | null;
+}) => {
   if (data?.token)  setGuestToken(data.token);
   if (data?.userId) {
     _userId = data.userId;
     try { localStorage.setItem(USER_ID_KEY, data.userId); } catch { /* storage blocked */ }
   }
+  if (typeof data?.claimed === "boolean") {
+    setAccount({ claimed: data.claimed, username: data.username ?? null });
+  }
 });
+
+// ── Account claim / restore (ack-based request helpers) ───────────────────────
+
+export type ClaimResult   = { ok: boolean; error?: string; username?: string; recoveryCode?: string };
+export type RestoreResult = {
+  ok: boolean; error?: string; viaRecovery?: boolean;
+  identity?: { userId: string; token: string; name: string; avatarColor: string; avatar: string; username: string | null };
+};
+
+// Ensure the socket is connected, then emit with an ack and a timeout so the UI
+// never hangs on a cold server.
+function emitWithAck<T>(event: string, payload: unknown, timeoutMs = 20_000): Promise<T> {
+  return new Promise((resolve) => {
+    let settled = false;
+    const done = (v: T) => { if (!settled) { settled = true; resolve(v); } };
+
+    const timer = setTimeout(
+      () => done({ ok: false, error: "The server took too long. Try again." } as unknown as T),
+      timeoutMs,
+    );
+
+    const fire = () => socket.emit(event, payload, (res: T) => { clearTimeout(timer); done(res); });
+
+    if (socket.connected) fire();
+    else {
+      socket.once("connect", fire);
+      socket.connect();
+    }
+  });
+}
+
+export function claimAccount(username: string, password: string): Promise<ClaimResult> {
+  return emitWithAck<ClaimResult>("claim_account", { username, password });
+}
+
+export function restoreAccount(username: string, password: string): Promise<RestoreResult> {
+  return emitWithAck<RestoreResult>("restore_account", { username, password });
+}
 
 // ── Server wake-up machinery ──────────────────────────────────────────────────
 // Render free tier cold-starts take ~55 s.  We fire a lightweight GET /ping the
