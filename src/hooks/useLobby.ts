@@ -36,7 +36,7 @@ export function useLobby() {
   const [joinError, setJoinError]     = useState<string>("");
   const [roomId, setRoomId]           = useState<string | null>(null);
   const [roomUpdate, setRoomUpdate]   = useState<RoomPlayerUpdate | null>(null);
-  const [triviaConfig, setTriviaConfig] = useState<TriviaConfig>({ mode: "random" });
+  const [triviaConfig, setTriviaConfig] = useState<TriviaConfig>({ mode: "random", count: 10 });
 
   // ── Socket lifecycle ───────────────────────────────────────────────────────
   useEffect(() => {

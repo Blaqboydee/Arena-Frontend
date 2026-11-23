@@ -7,6 +7,7 @@ import Avatar from "../components/ui/Avatar";
 import ConnectionBadge from "../components/ui/ConnectionBadge";
 import { getUserId } from "../socket";
 import TriviaSetup from "../components/TriviaSetup";
+import DailyChallengeCard from "../components/DailyChallengeCard";
 import type { AvatarColor } from "../types";
 // import Button from "../components/ui/Button";
 
@@ -200,6 +201,9 @@ export default function Lobby() {
             LOBBY
           </h1>
         </div>
+
+        {/* Daily Challenge banner */}
+        <DailyChallengeCard />
 
         {/* Game grid — grouped by player count */}
         <div className="w-full max-w-4xl flex flex-col gap-8 slide-up-2">

@@ -77,3 +77,9 @@ export function fetchProfile(id: string) {
 export function fetchSummary() {
   return get<Summary>(`/api/stats/summary`);
 }
+
+export type TriviaPack = { id: string; label: string; icon: string; count: number };
+
+export function fetchTriviaPacks() {
+  return get<{ packs: TriviaPack[] }>(`/api/trivia/packs`);
+}

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchTriviaPacks, type TriviaPack } from "../lib/api";
 
 // ── Shared types ───────────────────────────────────────────────────────────────
 
@@ -13,8 +14,12 @@ export type TriviaMode = "random" | "pack" | "custom";
 export type TriviaConfig = {
   mode:       TriviaMode;
   pack?:      string;
+  count?:     number;      // questions per round (pack / random modes)
   questions?: TriviaQuestion[];
 };
+
+export const QUESTION_COUNTS = [5, 10, 15, 20] as const;
+export const DEFAULT_COUNT = 10;
 
 export type TriviaPreset = {
   id:        string;
@@ -42,14 +47,6 @@ function savePresets(presets: TriviaPreset[]): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(presets));
 }
 
-// ── Packs ─────────────────────────────────────────────────────────────────────
-
-const PACKS = [
-  { id: "science",   label: "Science & Nature",   icon: "🔬" },
-  { id: "geography", label: "Geography & World",   icon: "🌍" },
-  { id: "culture",   label: "History & Culture",   icon: "📜" },
-];
-
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function blankQuestion(): TriviaQuestion {
@@ -75,17 +72,34 @@ export default function TriviaSetup({ config, onChange }: Props) {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [presetName, setPresetName] = useState("");
   const [showPresets, setShowPresets] = useState(false);
+  const [packs, setPacks] = useState<TriviaPack[]>([]);
+
+  // Pull the built-in packs from the server (single source of truth).
+  useEffect(() => {
+    let cancelled = false;
+    fetchTriviaPacks()
+      .then((res) => { if (!cancelled) setPacks(res.packs); })
+      .catch(() => { /* leave empty — pack mode just won't list options */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  const count = config.count ?? DEFAULT_COUNT;
 
   function setMode(mode: TriviaMode) {
     onChange({
       mode,
-      pack:      mode === "pack"    ? (config.pack ?? "science")       : undefined,
-      questions: mode === "custom"  ? (config.questions ?? [blankQuestion()]) : undefined,
+      count,
+      pack:      mode === "pack"    ? (config.pack ?? packs[0]?.id ?? "general") : undefined,
+      questions: mode === "custom"  ? (config.questions ?? [blankQuestion()])    : undefined,
     });
   }
 
   function setPack(pack: string) {
     onChange({ ...config, pack });
+  }
+
+  function setCount(n: number) {
+    onChange({ ...config, count: n });
   }
 
   function addQuestion() {
@@ -160,35 +174,62 @@ export default function TriviaSetup({ config, onChange }: Props) {
         ))}
       </div>
 
+      {/* Question count (random & pack modes) */}
+      {config.mode !== "custom" && (
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-mono text-[10px] text-text/70 tracking-widest uppercase">
+            Questions
+          </span>
+          <div className="flex rounded-sm border border-border overflow-hidden">
+            {QUESTION_COUNTS.map((n) => (
+              <button
+                key={n}
+                onClick={() => setCount(n)}
+                className={`px-3 py-1.5 font-mono text-[11px] tabular-nums transition-colors ${
+                  count === n ? "bg-amber/15 text-amber" : "bg-surface text-dim hover:text-muted"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Random mode */}
       {config.mode === "random" && (
         <p className="font-mono text-[11px] text-dim">
-          10 random questions from the built-in bank.
+          {count} random questions drawn from every pack.
         </p>
       )}
 
       {/* Pack selector */}
       {config.mode === "pack" && (
         <div className="flex flex-col gap-1.5">
-          {PACKS.map((pack) => (
-            <button
-              key={pack.id}
-              onClick={() => setPack(pack.id)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-sm border text-left transition-all ${
-                config.pack === pack.id
-                  ? "border-amber/40 bg-amber/10 text-amber"
-                  : "border-border bg-bg text-muted hover:border-border-bright"
-              }`}
-            >
-              <span className="text-base leading-none">{pack.icon}</span>
-              <span className="font-mono text-xs">{pack.label}</span>
-              {config.pack === pack.id && (
-                <span className="ml-auto font-mono text-[10px] text-amber">selected</span>
-              )}
-            </button>
-          ))}
+          {packs.length === 0 ? (
+            <p className="font-mono text-[11px] text-dim py-2">Loading packs…</p>
+          ) : (
+            packs.map((pack) => (
+              <button
+                key={pack.id}
+                onClick={() => setPack(pack.id)}
+                className={`flex items-center gap-3 px-3 py-2 rounded-sm border text-left transition-all ${
+                  config.pack === pack.id
+                    ? "border-amber/40 bg-amber/10 text-amber"
+                    : "border-border bg-bg text-muted hover:border-border-bright"
+                }`}
+              >
+                <span className="text-base leading-none">{pack.icon}</span>
+                <span className="font-mono text-xs">{pack.label}</span>
+                <span className="font-mono text-[10px] text-dim">{pack.count}q</span>
+                {config.pack === pack.id && (
+                  <span className="ml-auto font-mono text-[10px] text-amber">selected</span>
+                )}
+              </button>
+            ))
+          )}
           <p className="font-mono text-[10px] text-dim mt-1">
-            10 questions from the selected topic, supplemented with random if needed.
+            {count} questions from the selected pack, shuffled fresh each game.
           </p>
         </div>
       )}
