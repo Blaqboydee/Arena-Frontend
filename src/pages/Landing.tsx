@@ -377,7 +377,7 @@ export default function Landing() {
 
           {/* Section label */}
           <div className="rule-label">
-            <span>{returning ? "Welcome back" : "Identify yourself"}</span>
+            <span className="text-text/80">{returning ? "Welcome back" : "Identify yourself"}</span>
           </div>
 
           {/* Avatar preview + name input */}
@@ -395,7 +395,7 @@ export default function Landing() {
                 className="
                   w-full bg-bg border border-border rounded-sm
                   px-4 py-3 font-mono text-base text-text
-                  placeholder-dim outline-none
+                  placeholder-muted outline-none
                   focus:border-amber/60 transition-colors duration-150
                 "
               />
@@ -407,7 +407,7 @@ export default function Landing() {
 
           {/* Avatar picker */}
           <div className="flex flex-col gap-2">
-            <span className="font-mono text-[10px] text-dim tracking-widest uppercase">
+            <span className="font-mono text-[10px] text-text/70 tracking-widest uppercase">
               Choose avatar
             </span>
             <AvatarPicker value={avatar} onChange={setAvatar} />
@@ -427,9 +427,9 @@ export default function Landing() {
           {/* Restore a saved account (returning on a new device / after a wipe) */}
           <button
             onClick={() => setShowRestore(true)}
-            className="font-mono text-[11px] text-dim hover:text-amber transition-colors -mt-1 self-center"
+            className="font-mono text-[11px] text-text/70 hover:text-amber transition-colors -mt-1 self-center"
           >
-            Have an account? <span className="underline underline-offset-2">Restore it</span>
+            Have an account? <span className="text-amber underline underline-offset-2">Restore it</span>
           </button>
         </div>
 
