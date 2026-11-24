@@ -5,6 +5,7 @@ import GameCard, { GAMES } from "../components/GameCard";
 import { CreatedRoomModal, JoinRoomModal } from "../components/InviteModal";
 import Avatar from "../components/ui/Avatar";
 import ConnectionBadge from "../components/ui/ConnectionBadge";
+import WakingBanner from "../components/ui/WakingBanner";
 import { getUserId } from "../socket";
 import TriviaSetup from "../components/TriviaSetup";
 import DailyChallengeCard from "../components/DailyChallengeCard";
@@ -189,6 +190,9 @@ export default function Lobby() {
         onJoinRoom={openJoinDialog}
         onLeave={() => navigate("/")}
       />
+
+      {/* Cold-start notice — the key signal for mobile, where the badge label is hidden */}
+      <WakingBanner />
 
       {/* Main content */}
       <main className="relative z-10 flex-1 flex flex-col items-center px-6 py-12 gap-10">
