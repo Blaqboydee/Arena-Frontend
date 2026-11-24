@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import socket from "../socket";
 import { useSession } from "../hooks/useSession";
@@ -144,6 +144,62 @@ export default function Game() {
   const [showPromo, setShowPromo]         = useState(false);
   const connectionStatus = useConnectionStatus();
 
+  // Live match identity — starts from the navigation state, but a rematch (the
+  // server re-launching in the same room) updates it and remounts the game.
+  const [players, setPlayers]   = useState<Player[]>(() => state?.players ?? []);
+  const [yourId, setYourId]     = useState<string>(() => state?.yourId ?? "");
+  const [matchKey, setMatchKey] = useState(0);        // bump → fresh game mount
+  const [matchOver, setMatchOver] = useState(false);  // any game's match-over event
+  const [rematchMsg, setRematchMsg] = useState("");
+
+  const isHost = players[0]?.id === yourId;
+
+  // ── Rematch: play again in the same room, for everyone still here ───────────
+  useEffect(() => {
+    const onMatchFound = (data: { roomId: string; players: Player[]; yourId: string }) => {
+      if (data.roomId !== roomId) return;
+      setPlayers(data.players);
+      setYourId(data.yourId);
+      setOpponentLeft(false);
+      setMatchOver(false);
+      setRematchMsg("");
+      setMatchKey((k) => k + 1); // remount the game component → clean fresh state
+    };
+    const onFailed = (data: { message?: string }) =>
+      setRematchMsg(data?.message ?? "Couldn't start a rematch.");
+    const onOver = () => setMatchOver(true);
+
+    const overEvents = [
+      "ttt_match_over", "hm_match_over", "c4_match_over", "wdl_match_over",
+      "wyr_match_over", "mem_match_over", "triv_match_over", "bomb_result",
+    ];
+
+    socket.on("match_found", onMatchFound);
+    socket.on("play_again_failed", onFailed);
+    overEvents.forEach((e) => socket.on(e, onOver));
+    return () => {
+      socket.off("match_found", onMatchFound);
+      socket.off("play_again_failed", onFailed);
+      overEvents.forEach((e) => socket.off(e, onOver));
+    };
+  }, [roomId]);
+
+  // ── Leave the room on real exit (so we don't linger as a ghost) ────────────
+  // StrictMode double-invokes effects in dev; defer the emit one tick so a
+  // same-instance remount cancels the spurious leave. A real unmount lets it fire.
+  const leaveTimer = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (leaveTimer.current !== undefined) {
+      clearTimeout(leaveTimer.current);
+      leaveTimer.current = undefined;
+    }
+    return () => {
+      leaveTimer.current = window.setTimeout(() => {
+        if (socket.connected) socket.emit("leave_room", { roomId });
+      }, 0);
+    };
+  }, [roomId]);
+
   // ── Guard: must have valid state to render ─────────────────────────────────
   useEffect(() => {
     if (!state?.gameType || !state?.players || !state?.yourId || !roomId) {
@@ -188,7 +244,7 @@ export default function Game() {
     return null;
   }
 
-  const { gameType, players, yourId } = state;
+  const { gameType } = state;
 
   // ── Game router ────────────────────────────────────────────────────────────
   function renderGame() {
@@ -280,10 +336,39 @@ export default function Game() {
       {/* Top bar */}
       <GameBar gameType={gameType} players={players} myId={yourId} />
 
-      {/* Game area */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-10">
-        {renderGame()}
+      {/* Game area — keyed so a rematch remounts the game cleanly */}
+      <main className={`flex-1 flex flex-col items-center justify-center px-6 py-10 ${matchOver ? "pb-28" : ""}`}>
+        <div key={matchKey} style={{ display: "contents" }}>
+          {renderGame()}
+        </div>
       </main>
+
+      {/* Play-again bar — shown once a match ends (not after a disconnect/leave) */}
+      {matchOver && !opponentLeft && connectionStatus !== "disconnected" && (
+        <div className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-surface/95 backdrop-blur-md">
+          <div className="max-w-xl mx-auto px-4 py-3 flex items-center justify-center gap-3">
+            {isHost ? (
+              <>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => { setRematchMsg(""); socket.emit("play_again", { roomId }); }}
+                >
+                  ↻ Play again
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/lobby")}>
+                  Leave
+                </Button>
+              </>
+            ) : (
+              <span className="font-mono text-xs text-muted">Waiting for host to start a rematch…</span>
+            )}
+          </div>
+          {rematchMsg && (
+            <p className="pb-2 text-center font-mono text-[11px] text-red/90">{rematchMsg}</p>
+          )}
+        </div>
+      )}
 
       {/* Opponent left overlay */}
       {opponentLeft && (
