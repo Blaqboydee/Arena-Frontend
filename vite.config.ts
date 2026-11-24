@@ -14,7 +14,7 @@ export default defineConfig({
       selfDestroying: true,
       // Registered manually in main.tsx — web only, never inside the Capacitor app.
       injectRegister: false,
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.png', 'favicon-32.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Arena — 1v1 Multiplayer Games',
         short_name: 'Arena',
