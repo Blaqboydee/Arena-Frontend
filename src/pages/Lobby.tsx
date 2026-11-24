@@ -8,6 +8,7 @@ import ConnectionBadge from "../components/ui/ConnectionBadge";
 import { getUserId } from "../socket";
 import TriviaSetup from "../components/TriviaSetup";
 import DailyChallengeCard from "../components/DailyChallengeCard";
+import ClaimNudge from "../components/ClaimNudge";
 import type { AvatarColor } from "../types";
 // import Button from "../components/ui/Button";
 
@@ -202,8 +203,30 @@ export default function Lobby() {
           </h1>
         </div>
 
+        {/* Claim-your-account nudge (engaged guests only, dismissible) */}
+        <ClaimNudge />
+
         {/* Daily Challenge banner */}
         <DailyChallengeCard />
+
+        {/* Solo Trivia — something to play when no one's online */}
+        <button
+          onClick={() => navigate("/solo/trivia")}
+          className="w-full max-w-4xl slide-up-2 group text-left bg-surface border border-border rounded-sm
+                     px-5 py-3.5 flex items-center gap-4 hover:border-amber/50 hover:bg-amber/5
+                     active:scale-[0.995] transition-all"
+        >
+          <span className="text-2xl shrink-0">🧠</span>
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="font-display text-lg tracking-wide text-text">Solo Trivia</span>
+            <span className="font-mono text-[11px] text-muted truncate">
+              Play alone against the clock — 10 questions, climb the high scores.
+            </span>
+          </div>
+          <span className="font-mono text-[11px] text-amber uppercase tracking-widest shrink-0 group-hover:translate-x-0.5 transition-transform">
+            Play →
+          </span>
+        </button>
 
         {/* Game grid — grouped by player count */}
         <div className="w-full max-w-4xl flex flex-col gap-8 slide-up-2">
